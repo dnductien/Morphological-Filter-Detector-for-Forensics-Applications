@@ -12,35 +12,9 @@
 
 \modulolinenumbers[5]
 
-\journal{Journal of Signal Processing: Image Communication}
+\journal{Elsevier SPIC}
 
-%%%%%%%%%%%%%%%%%%%%%%%
-%% Elsevier bibliography styles
-%%%%%%%%%%%%%%%%%%%%%%%
-%% To change the style, put a % in front of the second line of the current style and
-%% remove the % from the second line of the style you would like to use.
-%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Numbered
-%\bibliographystyle{model1-num-names}
-
-%% Numbered without titles
-%\bibliographystyle{model1a-num-names}
-
-%% Harvard
-%\bibliographystyle{model2-names.bst}\biboptions{authoryear}
-
-%% Vancouver numbered
-%\usepackage{numcompress}\bibliographystyle{model3-num-names}
-
-%% Vancouver name/year
-%\usepackage{numcompress}\bibliographystyle{model4-names}\biboptions{authoryear}
-
-%% APA style
-%\bibliographystyle{model5-names}\biboptions{authoryear}
-
-%% AMA style
-%\usepackage{numcompress}\bibliographystyle{model6-num-names}
+%% Tien's comment: Check the standard file for more bib format. 
 
 %% `Elsevier LaTeX' style
 \bibliographystyle{elsarticle-num}
@@ -53,7 +27,6 @@
 \begin{frontmatter}
 
 \title{Morphological Filter Detector for Forensics~Applications}
-%\tnotetext[mytitlenote]{Fully documented templates are available in the elsarticle package on \href{http://www.ctan.org/tex-archive/macros/latex/contrib/elsarticle}{CTAN}.}
 
 %% Group authors per affiliation:
 \author{Giulia Boato}
@@ -67,16 +40,6 @@
 
 \author{Francesco G. B. De Natale}
 \address{University of Trento, Italy}
-
-%% or include affiliations in footnotes:
-%\author[mymainaddress,mysecondaryaddress]{Elsevier Inc}
-%\ead[url]{www.elsevier.com}
-
-
-%\ead[url]{www.disi.unitn.it/~boato/}
-
-%\address[mymainaddress]{1600 John F Kennedy Boulevard, Philadelphia}
-%\address[mysecondaryaddress]{360 Park Avenue South, New York}
 
 \begin{abstract}
 Mathematical morphology provides a large set of powerful non-linear image operators, widely used for feature extraction, noise removal or image enhancement. Although morphological filters might be used to remove artifacts produced by image manipulations, both on binary and graylevel documents, little effort has been spent towards their forensic identification. In a previous work \cite{de2017detecting}, a deterministic approach was proposed to detect erosion and dilation of binary images. In this paper we propose a non-trivial extension of such method that operates on grayscale images and is robust to image compression and other typical attacks. When the image is attacked the method looses its deterministic nature and uses a properly trained SVM classifier, using the original detector as a feature extractor. Extensive tests demonstrate that the proposed approach guarantees very high accuracy in filtering detection also after a high compression, and is also able to determine the adopted structuring element for moderate compression factors.
@@ -237,54 +200,69 @@ Finally, we should notice that not all the areas of an image are equally affecte
 
 
 \section{Experimental setup}
+\label{sec:exp_setup}
 
 In order to assess the performance of the proposed detector, we tested it in various scenarios and we evaluated it in terms of accuracy. In this section we describe such scenarios and the relevant experiments. Furthermore, we introduce the datasets used for the testing, and we provide additional details about the SVM classifier used in the detector and the relevant training procedure.
 
 \subsection{Datasets}
+\label{subsec:datasets}
 
 Three publicly available datasets have been used in the experiments:
 \begin{itemize}
 	\item The Uncompressed Colour Image Database (UCID) \cite{schaefer2003ucid}, built with the purpose of providing a standard set for performance assessments in image retrieval and compression. The dataset consists of 1,338 uncompressed color images, with fixed sizes of $512\times384$ or $384\times512$ pixels in uncompressed TIFF format.
 	\item The Dresden Image Database (DRESDEN) \cite{gloe2010dresden}, originally created for evaluation of forensic techniques related to camera-based information. From their public web-interface, we selected the complete set of RAW images (1,189 uncompressed images, all with fixed size of $3008\times2000$ pixels).
-	\item The Raw Images Dataset (RAISE) \cite{dang2015raise}, consisting of 8156 raw images with resolutions ranging from $3008\times2000$ to $4928\times3264$ pixels. Authors provide also smaller subsets, among which we selected the one containing 1,000 images (RAISE-1k).
+	\item The Raw Images Dataset (RAISE) \cite{dang2015raise}, consisting of 8156 raw images with resolutions ranging from $3,008\times2,000$ to $4,928\times3,264$ pixels. Authors provide also smaller subsets, among which we selected the one containing 1,000 images (RAISE-1k).
 \end{itemize}
 
-The three sets were selected to diversify the range of resolutions in the experimental tests. In order to evaluate our proposed schema, all the images were converted to grayscale with a depth of 8 bits.
+The three datasets were selected to diversify the range of resolutions in the experimental tests. In order to evaluate our proposed schema, all the images were converted to grayscale with a depth of 8 bits.
 
 \subsection{Testing scenarios}
+\label{subsec:test_scenarios}
 The proposed detector has been tested in various practical scenarios. It is to be pointed out that we did not consider the case of unattacked images, which is by definition deterministic, as previously discussed, and provides therefore 100\% accuracy.
 
-The first set of tests refers to the detection of morphological filtering on compressed images, using JPEG at various quality factors. In this case, we want to establish the accuracy of the detector in discriminating filtered vs. unfiltered images, in classifying the type of operator (erosion vs. dilation), and finally in determining the exact structuring element used for filtering. 
+\begin{itemize}
+\item Our first set of tests were performed in order to understand the impact of the parameters as well as to select a proper classifier. Based on the setups found on this set of tests, we kept the best setups (in term of performance) for the next tests.
 
-The second set of tests concerns noise attacks. In this case, the test image is contaminated with random noise and then compressed. Also in this case we determine the accuracy of the detector in determining the presence and type of filtering and the structuring element used.
+\item The second set of tests refers to the detection of morphological filtering on compressed images, using JPEG at various quality factors. In this case, we want to establish the accuracy of the detector in discriminating filtered vs. unfiltered images, in classifying the type of operator (erosion vs. dilation), and finally in determining the exact structuring element used for filtering. 
 
-Finally, we want to determine the capability of our approach in distinguishing between morphological filters and other filters that produce similar results. In particular, we considered Gaussian lowpass and median filtering. In both cases, the filtered images are compressed and passed to the detector to reveal possible false alarms.
+\item The third set of tests concerns noise attacks. In this case, the test image is contaminated with random noise and then compressed. Also in this case we determine the accuracy of the detector in determining the presence and type of filtering and the structuring element used.
+
+\item Finally, we want to determine the capability of our approach in distinguishing between morphological filters and other filters that produce similar results. In particular, we considered Gaussian lowpass and median filtering. In both cases, the filtered images are compressed and passed to the detector to reveal possible false alarms.
+	
+\end{itemize}
 
 It is worth noting that, due to the properties analysed in Sect. \ref{sec:method}, in the presence of a cascade of different basic operators (erosion and dilation), the detector will reveal the last operator applied. Accordingly, when processing an opened or a closed image, the detector will reveal the last dilation or erosion, respectively. Furthermore, in the presence of a cascade of the same basic operator, the detector will reveal a single erosion or dilation with the composed structuring element. Therefore, in the experimental section we will just consider erosion and dilation detection, even if the image may have been potentially processed with more complex combinations of filters.
 
-\subsection{The Sensibility and the Choice of the Classifiers}
 
-In order to understand the influence of the parameters as well as to select a proper classifier, we ran some experiments on a subset of images. After that, we empirically determined the values for these parameters. Table~\ref{tab:sensibility} summarizes these parameters, their meaning and how their values were decided.
+\section{Experimental Results and Discussion}
+
+In this section, all experimental tests carried out are described. %In subsection IV-A, the selected datasets and the processing of their content are presented, together with results related to uncompressed data; while subsection IV-B is dedicated to the analysis of compressed data. 
+All  tests are performed using Python 3.6 and libSVM on a standard machine (Macbook Pro 2016 2,3GHz 4-kernel Intel Core i5, 8GB ram).
+
+\subsection{The Sensibility and the Choice of the Classifiers}
+\label{subsec:sensibity}
+
+In order to understand the impact of the parameters as well as to select a proper classifier, we ran some experiments on a subset of images. After that, we empirically determined the values for these parameters. Table~\ref{tab:sensibility} summarizes these parameters, their meaning and how their values were decided.
 
 \begin{table*}[t!]
 	\centering
 	\caption{Parameters selection.}
 	\label{tab:sensibility}
 	\resizebox{\linewidth}{!}{
-	\begin{tabular}{p{2cm}|p{5cm}|p{5cm}|p{5cm}}
-		\hline\hline
-		\textbf{Parameter/ Classifier} & \textbf{Meaning} & \textbf{Range} &  \textbf{Empirical Value} \\
-		\hline
-		Image resolution & The size of the analyzed region of interest & $384 \times 512$  to $4928 \times 3264$& Good results for resolution higher than $1000 \times 1000$.\\
-		\hline
-		Block Selection Threshold $\alpha_{th}$ and Block Size $s$ & Erosion and dilation have a negligible effect on flat areas, thus these two parameters allow the method to effectively work on non-flat blocks only. & $\alpha_{th} \ge 0$, $\alpha = 0$ means all pixels in the block has the same values.
-		
-		$ s \in \{3 \times 3, 5 \times 5, ...\}$ & $ \alpha_{th} = 0.15$ and $s = 3 \times 3$.\\
-		\hline
-		$n$ & Number of bins of the analyzed histograms. & $0 \le n \le 256$ & Even if for $n > 30$ we already achieve 90\% accuracy, we set $n$ at the highest value, i.e., considering all bins.\\
-		\hline
-		The classifiers & & SVM, KNN, Linear Regression, and others & SVM with RBF kernel and grid search provides the best performance, Sec.~\ref{}. \\							
-		\hline\hline
+		\begin{tabular}{p{2cm}|p{5cm}|p{5cm}|p{5cm}}
+			\hline\hline
+			\textbf{Parameter/ Classifier} & \textbf{Meaning} & \textbf{Range} &  \textbf{Empirical Value/Selection} \\
+			\hline
+			Image resolution & The size of the analyzed region of interest & $384 \times 512$  to $4928 \times 3264$& Good results for resolution higher than $1000 \times 1000$.\\
+			\hline
+			Block Selection Threshold $\alpha_{th}$ and Block Size $s$ & Erosion and dilation have a negligible effect on flat areas, thus these two parameters allow the method to effectively work on non-flat blocks only. & $\alpha_{th} \ge 0$, $\alpha = 0$ means all pixels in the block has the same values.
+			
+			$ s \in \{3 \times 3, 5 \times 5, ...\}$ & $ \alpha_{th} = 0.15$ and $s = 3 \times 3$.\\
+			\hline
+			$n$ & Number of bins of the analyzed histograms (and we limit to analyse 144 histograms)& $0 \le n \le 256$ & Even if for $n > 30$ we already achieve 90\% accuracy, we set $n$ at the highest value, i.e., considering all bins.\\
+			\hline
+			The classifiers & & SVM, KNN, Linear Regression, and others & SVM with RBF kernel and grid search provides the best performance. \\							
+			\hline\hline
 	\end{tabular}}
 \end{table*}
 
@@ -330,19 +308,15 @@ Given the substantial equivalence of unfiltered and differently filtered images 
 	\item 36 dilated compressed images fed to the open operator with the matching structuring element (labelled as \textit{dilated}).
 \end{itemize}
 
-\section{Experimental Results and Discussion}
-
-In this section, all experimental tests carried out are described. In subsection IV-A, the selected datasets and the processing of their content are presented, together with results related to uncompressed data; while subsection IV-B is dedicated to the analysis of compressed data. All  tests are performed using Python 3.6 and libSVM on a standard PC (Macbook Pro 2016 2,3GHz 4-kernel Intel Core i5, 8GB ram).
-
 
 \subsection{Experimental Results on Uncompressed Images}
 
 Since the detection strategy in this case is the very same proposed in \cite{de2017detecting}, we followed their general approach for deriving results relative to uncompressed gray-scale images. Each image has been processed with erosion and dilation operators considering all the 36 structural elements, obtaining the following number of filtered images:
 
 \begin{itemize}
-	\item UCID $\rightarrow 1338\times 36 \times 2 = 96336$
-	\item DRESDEN $\rightarrow 1189\times 36\times 2 = 85608$
-	\item RAISE-1k $\rightarrow 1000\times 36\times 2 = 72000$
+	\item UCID $\rightarrow 1,338\times 36 \times 2 = 96,336$
+	\item DRESDEN $\rightarrow 1,189\times 36\times 2 = 85,608$
+	\item RAISE-1k $\rightarrow 1,000\times 36\times 2 = 72,000$
 \end{itemize}
 
 All images, along with their unprocessed versions, were fed to both dilation and erosion detectors. For each image, all 36 structural elements are tested, returning either the largest kernel with perfect match between input and output or no detection if all kernels fail. All datasets result in 100\% accuracy in discriminating the presence and the type of morphological filter, as reported in Table \ref{tab1:det_acc}.
@@ -367,193 +341,26 @@ All images, along with their unprocessed versions, were fed to both dilation and
 %\subsubsection{Training Phase}
 
 In order to test the proposed approach on JPEG compressed images, we considered a set of seven different quality factors with $QF \in \{100,95,90,85,80,75,70\}$, with 14 $(7\times 2)$ binary classifiers, respectively,
-using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$.
-
-%
-\begin{comment}
-\begin{table}[!ht]
-\centering
-\caption{Training configurations for fixed quality factor}
-\label{tab:hist}
-\begin{tabular}{|c|c|c|c|}
-\hline
-\textbf{DATASET}                  & \textbf{SUBSET} & $N_{images}$ & $N_{hist}$ \textbf{per class} \\ \hline
-\multirow{2}{*}{UCID}    & 70\%   & 936      & 67932              \\ \cline{2-4} 
-& 80\%   & 1070     & 77040              \\ \hline
-\multirow{2}{*}{DRESDEN} & 70\%   & 832      & 59904              \\ \cline{2-4} 
-& 80\%   & 951      & 98472              \\ \hline
-\multirow{2}{*}{RAISE}   & 70\%   & 700      & 50400              \\ \cline{2-4} 
-& 80\%   & 800      & 57600              \\ \hline
-\end{tabular}
-\end{table}
-\end{comment}
-%
-
-
-\subsubsection{Classification Results - Unprocessed vs Filtered Input}
-This first test is designed to assess performance when discriminating the presence of morphological filtering in a specific compressed image. For each image belonging to the test sets, the $36$ histograms extracted from unprocessed images as well as their $36$ derived from eroded (dilated) contents with correct detector combinations are classified.
-
-\begin{comment}
-\begin{table}[!ht]
-\centering
-\caption{Number of classified histograms for each quality factor and filter type}
-\label{tab:o_vs_f_hist}
-\begin{tabular}{|c|c|c|}
-\hline
-\textbf{DATASET}                  & \textbf{SUBSET} & $N_{hist}$     	   \\ \hline
-\multirow{2}{*}{UCID}    & 70\%   & 28944              \\ \cline{2-3} 
-& 80\%   & 19296              \\ \hline
-\multirow{2}{*}{DRESDEN} & 70\%   & 25704              \\ \cline{2-3} 
-& 80\%   & 17136              \\ \hline
-\multirow{2}{*}{RAISE}   & 70\%   & 21600              \\ \cline{2-3} 
-& 80\%   & 14400              \\ \hline
-\end{tabular}
-\end{table}
-
-In Figure \ref{fig:o_vs_f}, cumulative plots for all datasets is presented, depicting accuracy, false positives and false negatives rates for both erosion and dilation detectors.
-
-\begin{figure}[!ht]
-\centering
-\begin{tabular}{cc}
-\centering
-\includegraphics[scale=0.35]{o_vs_f_acc_erosion.eps} & \includegraphics[scale=0.35]{o_vs_f_acc_dilation.eps} \\
-\includegraphics[scale=0.35]{o_vs_f_fp_erosion.eps} & \includegraphics[scale=0.35]{o_vs_f_fp_dilation.eps} \\
-\includegraphics[scale=0.35]{o_vs_f_fn_erosion.eps} & \includegraphics[scale=0.35]{o_vs_f_fn_dilation.eps}
-\end{tabular}
-\caption{Accuracy (top), false positives (middle) and false negatives (bottom) result plots for erosion (left column) and dilation (right column) detectors when discriminating unprocessed and processed inputs.}
-\label{fig:o_vs_f}
-\end{figure}
-
-\end{comment}
-
-\subsubsection{Classification Results - Unmatched Filtered Type Input}
-In this test case, the classifier of a specific type of morphological filter is fed with all the $36\times 36$ histograms derived from each image processed with unmatched morphological operator. For example, dilated images are input to the detector dedicated to the erosion operator, and viceversa. The datasets have been used in their entirety. 
-
-\begin{comment}
-\begin{table}[!ht]
-\centering
-\caption{Number of classified histograms for each quality factor and filter type}
-\label{tab:hist_cross}
-\begin{tabular}{|c|c|c|}
-\hline
-\textbf{DATASET} & $N_{images}$ & $N_{hist}$  \\ \hline
-UCID & 1338 & 1734048 \\ \hline
-DRESDEN & 1189 & 1540944 \\ \hline
-RAISE & 1000 & 1296000 \\ \hline
-\end{tabular}
-\end{table}
-
-Results are presented in terms of accuracy and false positive rate, as we expect to retrieve only negative responses (see Figure \ref{fig:cross_f}).
-
-\begin{figure}[!ht]
-\centering
-\begin{tabular}{cc}
-\centering
-\includegraphics[scale=0.35]{cross_acc_erosion.eps} & \includegraphics[scale=0.35]{cross_acc_dilation.eps} \\
-\includegraphics[scale=0.35]{cross_fp_erosion.eps} & \includegraphics[scale=0.35]{cross_fp_dilation.eps}
-\end{tabular}
-\caption{Accuracy (top) and false positives (bottom) result plots for erosion (left column) and dilation (right column) detectors when discriminating correct filtering type.}
-\label{fig:cross_f}
-\end{figure}
-
-\end{comment}
-
-\subsubsection{Classification Results - Structural Element Discrimination}
-This last test is devoted to asses accuracy in evaluating the peculiar kernel that was adopted in the input filter procedure, assuming the same morphological operator for both detector and filter. All kernels are applied by the corresponding detector, and the structural element resulting with the highest classification score is selected as decision output. In total, each image is tested $36\times 36$ times, hence the same number of histogram as in the previous test case is considered. In Tables \ref{tab:ucid_mask}, \ref{tab:dresden_mask} and \ref{tab:raise_mask}, cumulative accuracy results for each dataset and each detector trained on the respective $80\%$ are presented. The various kernels have been divided into three main groups, depending on their dimension and the complexity of their shape.
-
-\textbf{COMMENTS ON ALL RESULTS ARE COMPLETELY MISSING}
-
-\begin{comment}
-
-%%%%%%%%%%% UCID %%%%%%%%%%%%%
-\begin{table}[!ht]
-\centering
-\caption{UCID - Structural Element Accuracy [\%]}
-\label{tab:ucid_mask}
-\begin{tabular}{c|c|c|c|c|c|c|c|}
-\cline{2-8}
-\multicolumn{1}{l|}{\textbf{Erosion}}               & \multicolumn{7}{c|}{\textbf{Quality Factor $QF$}}                                                     \\ \hline
-\multicolumn{1}{|c|}{\textbf{Mask}}  & \textbf{100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\ \hline
-\multicolumn{1}{|c|}{\textbf{1-15}}  & 100.00          & 99.83       & 99.32      & 98.47       & 97.55       & 96.22       & 94.37       \\ \hline
-\multicolumn{1}{|c|}{\textbf{16-25}} & 100.00         & 99.91       & 99.57       & 98.81       & 98.45       & 97.64       & 96.66      \\ \hline
-\multicolumn{1}{|c|}{\textbf{26-36}} & 100.00          & 99.93       & 99.14       & 98.50       & 97.58       & 96.40       & 95.06       \\ \hline
-\multicolumn{1}{c}{} &\multicolumn{1}{c}{} &\multicolumn{1}{c}{} & \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}\\ \cline{2-8}
-\multicolumn{1}{l|}{\textbf{Dilation}}               & \multicolumn{7}{c|}{\textbf{Quality Factor $QF$}}                                                     \\ \hline
-\multicolumn{1}{|c|}{\textbf{Mask}}  & \textbf{100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\ \hline
-\multicolumn{1}{|c|}{\textbf{1-15}}  & 100.00          & 99.97       & 99.12      & 97.71       & 95.80       & 93.10       & 89.70      \\ \hline
-\multicolumn{1}{|c|}{\textbf{16-25}} & 100.00          & 99.96       & 99.33       & 97.80       & 96.87       & 95.34       & 93.30      \\ \hline
-\multicolumn{1}{|c|}{\textbf{26-36}} & 100.00          & 99.96       & 98.80       & 96.00      & 94.65       & 91.91       & 87.87       \\ \hline
-\end{tabular}
-\end{table}
-
-%%%%%%%%% DRESDEN %%%%%%%%
-
-\begin{table}[!ht]
-\centering
-\caption{DRESDEN - Structural Element Accuracy [\%]}
-\label{tab:dresden_mask}
-\begin{tabular}{c|c|c|c|c|c|c|c|}
-\cline{2-8}
-\multicolumn{1}{l|}{\textbf{Erosion}}               & \multicolumn{7}{c|}{\textbf{Quality Factor $QF$}}                                                     \\ \hline
-\multicolumn{1}{|c|}{\textbf{Mask}}  & \textbf{100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\ \hline
-\multicolumn{1}{|c|}{\textbf{1-15}}  & 100          & 92.58       & 89.17       & 83.96       & 78.25       & 75.04       & 71.58       \\ \hline
-\multicolumn{1}{|c|}{\textbf{16-25}} & 100          & 92.25       & 90.05       & 88.44       & 82.25       & 80.92       & 81.37       \\ \hline
-\multicolumn{1}{|c|}{\textbf{26-36}} & 100          & 91.29       & 91.02       & 87.06       & 79.65       & 75.95       & 76.36       \\ \hline
-\multicolumn{1}{c}{} &\multicolumn{1}{c}{} &\multicolumn{1}{c}{} & \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}\\ \cline{2-8}
-\multicolumn{1}{l|}{\textbf{Dilation}}               & \multicolumn{7}{c|}{\textbf{Quality Factor $QF$}}                                                     \\ \hline
-\multicolumn{1}{|c|}{\textbf{Mask}}  & \textbf{100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\ \hline
-\multicolumn{1}{|c|}{\textbf{1-15}}  & 100          & 92.58       & 89.17       & 83.96       & 78.25       & 75.04       & 71.58       \\ \hline
-\multicolumn{1}{|c|}{\textbf{16-25}} & 100          & 92.25       & 90.05       & 88.44       & 82.25       & 80.92       & 81.37       \\ \hline
-\multicolumn{1}{|c|}{\textbf{26-36}} & 100          & 91.29       & 91.02       & 87.06       & 79.65       & 75.95       & 76.36       \\ \hline
-\end{tabular}
-\end{table}
-
-%%%%%%%%%%%%% RAISE %%%%%%%%%%%%%
-\begin{table}[!ht]
-\centering
-\caption{RAISE - Structural Element Accuracy [\%]}
-\label{tab:raise_mask}
-\begin{tabular}{c|c|c|c|c|c|c|c|}
-\cline{2-8}
-\multicolumn{1}{l|}{\textbf{Erosion}}               & \multicolumn{7}{c|}{\textbf{Quality Factor $QF$}}                                                     \\ \hline
-\multicolumn{1}{|c|}{\textbf{Mask}}  & \textbf{100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\ \hline
-\multicolumn{1}{|c|}{\textbf{1-15}}  &  100.00 	& 97.85 	& 90.66 	& 83.30 	& 76.05 	& 71.18 	& 65.35 
-\\ \hline
-\multicolumn{1}{|c|}{\textbf{16-25}} &  100.00 	& 98.93 	& 91.60 	& 84.65 	& 79.22 &	 76.08 &	 79.46 
-\\ \hline
-\multicolumn{1}{|c|}{\textbf{26-36}} &  100.00 	& 97.95 	& 92.17 	& 82.91 	& 75.78 	& 70.35 	& 67.78 
-\\ \hline
-\multicolumn{1}{c}{} &\multicolumn{1}{c}{} &\multicolumn{1}{c}{} & \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}& \multicolumn{1}{c}{}\\ \cline{2-8}
-\multicolumn{1}{l|}{\textbf{Dilation}}               & \multicolumn{7}{c|}{\textbf{Quality Factor $QF$}}                                                     \\ \hline
-\multicolumn{1}{|c|}{\textbf{Mask}}  & \textbf{100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\ \hline
-\multicolumn{1}{|c|}{\textbf{1-15}}  &  100.00 	& 97.99 &	 90.30 & 	 83.55 &	 78.17 	& 75.53 	& 71.09       \\ \hline
-\multicolumn{1}{|c|}{\textbf{16-25}} &  100.00 &	 98.75 &	 91.51 &	 85.74 &	 81.53 &	 79.93 	& 82.80 
-\\ \hline
-\multicolumn{1}{|c|}{\textbf{26-36}} &  100.00 	& 97.58 &	 92.37 &	 83.99 	& 79.13 	& 76.20 	& 74.09 
-\\ \hline
-\end{tabular}
-\end{table}
-\end{comment}
-
+using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$. Shown in Table~\ref{table:detection_results} are the average results (over all kernels) of the proposed method on three datasets at the seven quality factors. The detailed results for all kernels, both two morphological operators over all three datasets are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation}. According to the results, we can observe that the proposed method can provide high detection performance on low compression level (i.e., high factor quality - $QF \ge 80$) images with the accurac over $76.8\%$ on all datasets. At higher compression level, the performance reduced significantly. The resolution also plays an important role as can be seen from the results that UCID has lower performance than Dresden and Raise. It is also interesting to notice that there is little difference between Dresden and Raise, confirming our observation in the first set of tests that the proposed method can give good performance for the resolution from about $1,000 \times 1,000$. 
 
 \begin{table*}
 	\centering
-	\caption{Results on all three datasets  using SVM with RBF kernel, 10-fold cross validation.}
+	\caption{Morphological filtering detection results on all three datasets  using SVM with RBF kernel, 10-fold cross validation. The numbers are in percentage and each of them is the average performance (for distinguishing between the non-filtered versus filtered images) over all 36 kernels. Details results are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation}.}
 	\label{table:detection_results}
 	\resizebox{\linewidth}{!}{
-	\begin{tabular}{l|l|ccccccc}
-		\hline\hline
-		\textbf{Dataset} & \textbf{Operator} & \textbf{QF = 100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\
-		\hline
-		\textbf{UCID} & Erosion & 100 & 90.86 & 82.62 & 79.63 & 77.45 & 67.41 & 64.42 \\
-		& Dilation & 100 & 90.16 & 82.86 & 79.95 & 76.80 & 68.77 & 64.94 \\
-		\hline
-		\textbf{Dresden} & Erosion & 100 & 97.56 & 96.94 & 95.20 & 88.73 & 79.85 & 78.34 \\
-		& Dilation & 100 & 97.93 & 96.82 & 96.11 & 88.74 & 81.08 & 75.08 \\
-		\hline
-		\textbf{Raise} & Erosion & 100 & 98.66 & 96.25 & 94.82 & 89.00 & 80.42 & 78.55 \\
-		& Dilation & 100 & 97.98 & 97.43 & 93.72 & 91.02 & 80.49 & 78.53 \\
-		\hline\hline
+		\begin{tabular}{l|l|ccccccc}
+			\hline\hline
+			\textbf{Dataset} & \textbf{Operator} & \textbf{QF = 100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\
+			\hline
+			\textbf{UCID} & Erosion & 100 & 90.86 & 82.62 & 79.63 & 77.45 & 67.41 & 64.42 \\
+			& Dilation & 100 & 90.16 & 82.86 & 79.95 & 76.80 & 68.77 & 64.94 \\
+			\hline
+			\textbf{Dresden} & Erosion & 100 & 97.56 & 96.94 & 95.20 & 88.73 & 79.85 & 78.34 \\
+			& Dilation & 100 & 97.93 & 96.82 & 96.11 & 88.74 & 81.08 & 75.08 \\
+			\hline
+			\textbf{Raise} & Erosion & 100 & 98.66 & 96.25 & 94.82 & 89.00 & 80.42 & 78.55 \\
+			& Dilation & 100 & 97.98 & 97.43 & 93.72 & 91.02 & 80.49 & 78.53 \\
+			\hline\hline
 	\end{tabular}}
 \end{table*}
 
@@ -561,7 +368,7 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 	\centering
 	\begin{minipage}{0.48\linewidth}
 		\centering
-		\caption{Results on erosion detection on UCID using SVM with RBF kernel, 10-fold cross validation.}
+		\caption{Results on erosion detection on UCID.}
 		\label{table:uciderosion}
 		\resizebox{\linewidth}{!}{
 			\begin{tabular}{c|ccccccc}
@@ -611,7 +418,7 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 	\end{minipage}
 	\begin{minipage}{0.48\linewidth}
 		\centering
-		\caption{Results on dilation detection on UCID using SVM with RBF kernel, 10-fold cross validation.}
+		\caption{Results on dilation detection on UCID.}
 		\label{table:uciddilation}
 		\resizebox{\linewidth}{!}{
 			\begin{tabular}{c|ccccccc}
@@ -665,7 +472,7 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 	\centering
 	\begin{minipage}{0.48\linewidth}
 		\centering
-		\caption{Results on erosion detection on Dresden using SVM with RBF kernel, 10-fold cross validation.}
+		\caption{Results on erosion detection on Dresden.}
 		\label{table:dresdenerosion}
 		\resizebox{\linewidth}{!}{
 			\begin{tabular}{c|ccccccc}
@@ -715,7 +522,7 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 	\end{minipage}
 	\begin{minipage}{0.48\linewidth}
 		\centering
-		\caption{Results on dilation detection on Dresden using SVM with RBF kernel, 10-fold cross validation.}
+		\caption{Results on dilation detection on Dresden.}
 		\label{table:dresdendilation}
 		\resizebox{\linewidth}{!}{
 			\begin{tabular}{c|ccccccc}
@@ -769,7 +576,7 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 	\centering
 	\begin{minipage}{0.48\linewidth}
 		\centering
-		\caption{Results on erosion detection on Raise using SVM with RBF kernel, 10-fold cross validation.}
+		\caption{Results on erosion detection on Raise1K.}
 		\label{table:raise}
 		\resizebox{\linewidth}{!}{
 			\begin{tabular}{c|ccccccc}
@@ -820,7 +627,7 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 	\end{minipage}
 	\begin{minipage}{0.48\linewidth}
 		\centering
-		\caption{Results on dilation detection on Raise using SVM with RBF kernel, 10-fold cross validation.}
+		\caption{Results on dilation detection on Raise1K.}
 		\label{table:raisedilation}
 		\resizebox{\linewidth}{!}{
 			\begin{tabular}{c|ccccccc}
@@ -871,7 +678,10 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 	\end{minipage}
 \end{table*}
 
-\begin{table*}
+
+The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect using different classifiers. Shown in Table~\ref{table:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable since applying some small kernels together may create the same results as if we apply with the bigger kernels. In binary image, this effect can be observed very clear and it has been discussed in \cite{DeNatale2016}.
+
+\begin{table*}[t!]
 	\centering
 	\caption{Confusion matrix on erosion detection for multiple kernels. Dataset: Raise, QF = 90, full resolution. Values are normalized and are in percentage.}
 	\label{table:confusion}
@@ -934,6 +744,8 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 
 
 %%%% ---- Dilation ---- %%%%
+\subsection{Detection Results under Different Attacks}
+\label{subsec:result_attacks}
 
 
 \begin{table}[!t]
@@ -986,6 +798,7 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 		\hline\hline	
 	\end{tabular}
 \end{table}
+
 
 
 \begin{table}[!t]
@@ -1062,9 +875,8 @@ This last test is devoted to asses accuracy in evaluating the peculiar kernel th
 
 \section{Conclusions}
 In this work we propose an effective detection strategy to assess the use of morphological filtering in a gray-scale context. We deal with uncompressed images proposing a deterministic approach, reflection of the binary domain scenario, based on mathematical properties enjoyed by basic morphological operators. We additionally propose a modified pipeline to detect morphological processing in compressed images, exploiting difference histogram information as feature for Support Vector Machine classification. Finally, we present a testing phase in which both uncompressed and compressed scenarios are taken into consideration. Results show the effectiveness of our proposed approach in both cases.  
+ 
 
-
-\section*{References}
 
 \bibliography{refs}
 
