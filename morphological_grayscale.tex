@@ -6,7 +6,14 @@
 \usepackage{rotating}
 \usepackage{multirow}
 \usepackage{enumerate}
+\usepackage{longtable}
 \usepackage{comment}
+
+
+\usepackage{array}
+%\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+%\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 \graphicspath{{./images/}}
 
@@ -65,7 +72,7 @@ This broad class of specific manipulation detectors includes the identification 
 In the context of non-linear filtering detection 
 very little attention was given to morphological filters \cite{haas1967morphologie} often used in image processing for artifacts removal and image enhancement \cite{British2012} \cite{Maragos2004}. The detection of this kind of filtering is of interest in the context of both image phylogeny and specific tampering identification in legal scenarios, but could be very useful also to detect possible counter forensic attacks based on morphology, where such filters, very powerful in the removal of local noise, could be exploited at the end of the image manipulation process to cover other types of traces. 
 
-In this paper we present a non trivial extension of a recent work \cite{de2017detecting} which deterministically detect erosion and dilation of binary images. The proposed extension works on grayscale images by detecting morphological filters application in an accurate way both in uncompressed and compressed images. The method also allows for erosion versus dilation discrimination and in many cases also for the adopted structural element identification. %both useful in image phylogeny reconstruction aiming at reconstructing the transformations between near-duplicates as modified and original images can be considered in our case. 
+In this paper we present a non trivial extension of a recent work \cite{de2017detecting} which deterministically detect erosion and dilation of binary images. The proposed extension works on grayscale images by detecting morphological filters application in an accurate way both in uncompressed and compressed images. The method also allows for erosion versus dilation discrimination and in many cases also for the adopted structural element (or simply called the ``kernel") identification. 
 Robustness against JPEG compression, noise addition and confusion with other types of filters is also tested on various datasets. 
 
 The rest of the paper is organized as follows: Section II provides the theoretical background for the problem formulation; Section III describes the proposed methodology for morphological filtering detection in uncompressed and compressed images; Section IV describes the experimental setup, datasets and scenarios adopted for testing and validation; Section V details the experimental analysis and  obtained results; finally, Section VI reports some concluding remarks.   
@@ -75,19 +82,19 @@ The rest of the paper is organized as follows: Section II provides the theoretic
 In this section we introduce the mathematical formulation of the problem, and we derive the proposed methodology for morphological filter detection. 
 
 \subsection{Mathematical Formulation and Properties}
-Mathematical morphology defines a set of nonlinear filters commonly employed in digital image processing to modify the local structural content of images. All the morphological filters are derived from the various combinations of two basic operators, \textit{erosion} and \textit{dilation}, and a kernel mask called \textit{structuring element}, characterized by a shape, a size, and a reference point. The shape and the size of the kernel are responsible for the behavior of the operator on the image, while the reference point just defines the shift of the filtered image with respect to the original. The invention of such mathematical tools dates back to 1964 \cite{haas1967morphologie}, and was meant to the filtering of binary images for mineral studies. Later studies \cite{nakagawa1977note} led to the generalization of the theory to the case of grayscale images.
+Mathematical morphology defines a set of nonlinear filters commonly employed in digital image processing to modify the local structural content of images. All the morphological filters are derived from the various combinations of two basic operators, \textit{erosion} and \textit{dilation}, and a kernel mask (or shortly, a kernel) called \textit{structuring element}, characterized by a shape, a size, and a reference point. The shape and the size of the kernel are responsible for the behavior of the operator on the image, while the reference point just defines the shift of the filtered image with respect to the original. The invention of such mathematical tools dates back to 1964 \cite{haas1967morphologie}, and was meant to the filtering of binary images for mineral studies. Later studies \cite{nakagawa1977note} led to the generalization of the theory to the case of grayscale images.
 
-According to this theory, given a grayscale image $f(x,y)$ and a binary structuring element $B$, the two fundamental morphological operators, erosion and dilation, are respectivelly defined as:
+According to this theory, given a grayscale image $f(x,y)$ and a binary structuring element $K$, the two fundamental morphological operators, erosion and dilation, are respectivelly defined as:
 
 \begin{equation} \label{eq:erode}
-f \ominus B = min_B(f(x,y) \cap B_{xy})
+f \ominus K = min_K(f(x,y) \cap K_{xy})
 \end{equation}
 \begin{equation} \label{eq:dilate}
-f \oplus B = max_B(f(x,y) \cap B_{xy})
+f \oplus K = max_K(f(x,y) \cap K_{xy})
 \end{equation}
 
 
-where $B_{xy}$ represents the structuring element B with the reference point centered at the coordinates $x,y$ of the image plane, while the intersection operations returns the subset of the image pixels overlapped with the 1s of $B$. In this respect, the basic grayscale operators are particular cases of rank-order filters, and behave very similarly to min-max and median operators, except for the shape of the mask.
+where $K_{xy}$ represents the structuring element (kernel) $K$ with the reference point centered at the coordinates $x,y$ of the image plane, while the intersection operations returns the subset of the image pixels overlapped with the 1s of $K$. In this respect, the basic grayscale operators are particular cases of rank-order filters, and behave very similarly to min-max and median operators, except for the shape of the mask.
 
 \begin{figure}[h!]
 	\centering
@@ -366,66 +373,64 @@ using a Gaussian kernel with grid-search for the parameters. We apply k-Fold val
 
 
 
-\begin{table}[!t]
-	\centering
+\begin{longtable}{c|cccccc}
 	\caption{Results on erosion detection under different resolutions. Dataset: Raise, QF = 90. Results are in percentage.}
-	\label{table:resolutionerosion}
-		\begin{tabular}{c|cccccc}
-			\hline\hline
-			& &\textbf{3000}&\textbf{2000}&\textbf{1000}&\textbf{500}&\textbf{300}\\
-			&\textbf{Full}&\textbf{x}&\textbf{x}&\textbf{x}&\textbf{x}&\textbf{x}\\
-			&&\textbf{3000}&\textbf{2000}&\textbf{1000}&\textbf{500}&\textbf{300}\\
-			\hline
-			%1&97.34&96.45&95.24&90.32&75.25&64.75\\
-			%2&97.53&95.61&95.56&89.67&74.76&64.67\\
-			%3&97.16&95.62&95.62&90.38&74.85&65.53\\
-			%4&96.34&94.76&94.76&90.24&74.68&64.65\\
-			%5&96.15&93.93&93.93&91.18&73.91&65.15\\
-			%6&95.42&94.52&93.81&92.13&73.01&64.8\\
-			%7&95.96&94.73&93.33&92.99&73.45&63.99\\
-			%8&95.47&94.81&92.55&92.03&73.69&64.28\\
-			%9&96.4&94.46&93.54&92.63&73.3&63.63\\
-			%10&95.68&95.07&94.12&92.09&74.12&63.38\\
-			%11&96.43&95.84&94.85&91.36&74.01&63.62\\
-			%12&97.29&94.97&94.97&91.45&73.71&62.7\\
-			%13&97.46&94.51&94.3&91.2&73.04&61.96\\
-			%14&96.87&95.47&95.23&91.68&73.42&62.09\\
-			%15&95.97&95.97&95.97&91.42&72.81&62.62\\
-			%16&98.04&98.21&98.09&92.06&85.17&67.07\\
-			%17&98.03&98.03&97.9&92.18&86&66.75\\
-			%18&98.96&97.23&97.23&92.4&86.25&65.98\\
-			%19&98.83&98.05&96.29&93.09&86.64&66.3\\
-			%20&98.58&98.22&96.41&92.47&86.42&65.64\\
-			%21&97.66&97.66&96.63&93.29&86.1&66.57\\
-			%22&96.8&96.8&95.76&92.56&86.91&65.59\\
-			%23&97.35&96.58&96.38&92.72&87.62&66.56\\
-			%24&96.72&96.72&96.52&93.48&87.72&66.71\\
-			%25&96.1&96.1&96.1&92.6&86.99&65.79\\
-			%26&95.18&97.46&97.46&93.03&85.16&67.32\\
-			%27&95.64&95.64&95.64&92.6&84.23&67.59\\
-			%28&94.67&94.67&94.67&93.12&84.65&67.38\\
-			%29&94.48&94.43&94.43&93.03&84.75&66.82\\
-			%30&93.48&93.48&93.48&92.47&84.83&67.3\\
-			%31&93.21&93.21&93.21&91.62&85.27&67.66\\
-			%32&93.58&92.96&92.5&91.35&84.94&68.55\\
-			%33&94.35&93.6&92.84&91.82&85.18&69.31\\
-			%34&94.94&94.16&92.13&91.69&85.89&69.66\\
-			%35&94.98&94.89&92.9&92.41&86.63&69.44\\
-			%36&95.93&94.04&93.61&92.9&85.78&69.03\\
-			\hline
-			\textbf{Avg. over all kernels}&96.25&95.52&94.94&92.05&80.87&65.86\\
-			\hline\hline	
-	\end{tabular}
-\end{table}
+	\label{table:resolutionerosion}\\
+	\hline\hline
+	& &\textbf{3000}&\textbf{2000}&\textbf{1000}&\textbf{500}&\textbf{300}\\
+	K &\textbf{Full}&\textbf{x}&\textbf{x}&\textbf{x}&\textbf{x}&\textbf{x}\\
+	&&\textbf{3000}&\textbf{2000}&\textbf{1000}&\textbf{500}&\textbf{300}\\
+	\hline
+	1&97.34&96.45&95.24&90.32&75.25&64.75\\
+	2&97.53&95.61&95.56&89.67&74.76&64.67\\
+	3&97.16&95.62&95.62&90.38&74.85&65.53\\
+	4&96.34&94.76&94.76&90.24&74.68&64.65\\
+	5&96.15&93.93&93.93&91.18&73.91&65.15\\
+	6&95.42&94.52&93.81&92.13&73.01&64.8\\
+	7&95.96&94.73&93.33&92.99&73.45&63.99\\
+	8&95.47&94.81&92.55&92.03&73.69&64.28\\
+	9&96.4&94.46&93.54&92.63&73.3&63.63\\
+	10&95.68&95.07&94.12&92.09&74.12&63.38\\
+	11&96.43&95.84&94.85&91.36&74.01&63.62\\
+	12&97.29&94.97&94.97&91.45&73.71&62.7\\
+	13&97.46&94.51&94.3&91.2&73.04&61.96\\
+	14&96.87&95.47&95.23&91.68&73.42&62.09\\
+	15&95.97&95.97&95.97&91.42&72.81&62.62\\
+	16&98.04&98.21&98.09&92.06&85.17&67.07\\
+	17&98.03&98.03&97.9&92.18&86&66.75\\
+	18&98.96&97.23&97.23&92.4&86.25&65.98\\
+	19&98.83&98.05&96.29&93.09&86.64&66.3\\
+	20&98.58&98.22&96.41&92.47&86.42&65.64\\
+	21&97.66&97.66&96.63&93.29&86.1&66.57\\
+	22&96.8&96.8&95.76&92.56&86.91&65.59\\
+	23&97.35&96.58&96.38&92.72&87.62&66.56\\
+	24&96.72&96.72&96.52&93.48&87.72&66.71\\
+	25&96.1&96.1&96.1&92.6&86.99&65.79\\
+	26&95.18&97.46&97.46&93.03&85.16&67.32\\
+	27&95.64&95.64&95.64&92.6&84.23&67.59\\
+	28&94.67&94.67&94.67&93.12&84.65&67.38\\
+	29&94.48&94.43&94.43&93.03&84.75&66.82\\
+	30&93.48&93.48&93.48&92.47&84.83&67.3\\
+	31&93.21&93.21&93.21&91.62&85.27&67.66\\
+	32&93.58&92.96&92.5&91.35&84.94&68.55\\
+	33&94.35&93.6&92.84&91.82&85.18&69.31\\
+	34&94.94&94.16&92.13&91.69&85.89&69.66\\
+	35&94.98&94.89&92.9&92.41&86.63&69.44\\
+	36&95.93&94.04&93.61&92.9&85.78&69.03\\
+	\hline
+	\textbf{Avg. over all kernels}&96.25&95.52&94.94&92.05&80.87&65.86\\
+	\hline\hline	
+\end{longtable}
+
 
 The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect using different classifiers. Shown in Table~\ref{table:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable since applying some small kernels together may create the same results as if we apply with the bigger kernels. In binary image, this effect can be observed very clear and it has been discussed in \cite{DeNatale2016}.
 
-\begin{table*}[t!]
+\begin{sidewaystable}[!htbp]
 	\centering
 	\caption{Confusion matrix on erosion detection for multiple kernels. Dataset: Raise, QF = 90, full resolution. Values are normalized and are in percentage.}
 	\label{table:confusion}
 	\includegraphics[width=\linewidth]{confusion}
-\end{table*}
+\end{sidewaystable}
 
 \subsection{Detection Results under Different Attacks}
 \label{subsec:result_attacks}
@@ -434,61 +439,56 @@ The third set of tests concerns noise attacks. In the first test, each image is 
 
 We applied a further test on understanding if the proposed method can detect the morphological filter under an attack and followed by a compression. In this test, each image after applied the morphological filter is contaminated with a noise (only three first attacks were applied), and then is compressed under different quality factors.  The results in Table~\ref{table:attacks2} shown that the proposed method can still detect the morphological filter, however, its performance is getting worst as the compression quality factor increasing.  
 
-\begin{table}[!t]
-	\centering
+\begin{longtable}{C{1.5cm}|C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}}
 	\caption{Results on dilation detection under different attacks. Dataset: Raise, full resolution, QF = 100, using SVM with RBF kernel, 10-fold cross validation.}
-	\label{table:attacks1}
-	\resizebox{0.4\linewidth}{!}{
-	\begin{tabular}{c|ccccc}
-		\hline\hline
-		\textbf{K} & \textbf{Pepper \&}&\textbf{Gaussian }&\textbf{Median Filter}&\textbf{Scale}&\textbf{Scale}\\
-		& \textbf{Salt}&\textbf{(3x3)}&\textbf{(3x3)}&\textbf{(1.1x)}&\textbf{(0.9x)}\\
-		\hline
-		1&96.24&84.93&95.48&63.68&68.68\\
-		2&96.96&83.99&95.81&64.41&68.23\\
-		3&97.19&83.92&94.83&65.33&67.96\\
-		4&97.86&84.38&94.77&65.39&67.75\\
-		5&98.02&84.42&95.64&66&67.02\\
-		6&98.07&85.07&96.58&65.85&67.16\\
-		7&98.21&85.5&97.34&66.22&67.88\\
-		8&97.28&84.79&97.35&66.2&67.85\\
-		9&97.06&85.61&97.9&67.09&67.68\\
-		10&97.86&86.54&97.19&67.29&68.06\\
-		11&97.89&87.19&97.89&67.95&68.66\\
-		12&98.77&87.25&97.36&68.78&69.27\\
-		13&99.76&86.37&97.8&67.84&69.83\\
-		14&100&86.86&97.79&68.07&68.97\\
-		15&99.11&74.96&72.17&68.23&68.23\\
-		16&99.72&74.45&72.65&68.42&69.23\\
-		17&100&75.27&73.45&68.63&69.79\\
-		18&99.92&75.6&73.43&67.7&69.29\\
-		19&100&75.3&72.44&67.32&70.04\\
-		20&100&74.64&72.88&68.31&70.76\\
-		21&100&75.63&73.09&69.22&70\\
-		22&100&74.9&72.81&68.72&69.13\\
-		23&100&75.61&72.83&69.42&68.81\\
-		24&100&75.98&72.4&69.24&67.94\\
-		25&99.64&76.83&72.3&69.87&68.4\\
-		26&95.47&81.97&93.57&66.64&64.64\\
-		27&96.24&82.14&94.46&66.47&65.15\\
-		28&96.21&81.27&93.56&66.49&64.93\\
-		29&95.78&81.88&92.99&66.62&65.09\\
-		30&96.06&81.12&92.34&66.63&65.86\\
-		31&95.36&81.11&91.94&66.93&65.61\\
-		32&96.1&80.41&91.23&67.92&66.05\\
-		33&95.59&81.34&91.25&68.7&66.33\\
-		34&96.38&81.73&91.01&68.44&66.86\\
-		35&95.74&82.53&90.03&68.72&66.97\\
-		36&96.65&81.95&89.23&69.25&67.22\\
-		\hline
-		\textbf{Avg.}&\textbf{97.92}&\textbf{81.21}&\textbf{87.94}&\textbf{67.44}&\textbf{67.81}\\
-		\hline\hline	
-	\end{tabular}}
-\end{table}
+	\label{table:attacks1}\\
+	\hline\hline
+	\textbf{K} & \textbf{Pepper \&}&\textbf{Gaussian }&\textbf{Median Filter}&\textbf{Scale}&\textbf{Scale}\\
+	& \textbf{Salt}&\textbf{(3x3)}&\textbf{(3x3)}&\textbf{(1.1x)}&\textbf{(0.9x)}\\
+	\hline
+	1&96.24&84.93&95.48&63.68&68.68\\
+	2&96.96&83.99&95.81&64.41&68.23\\
+	3&97.19&83.92&94.83&65.33&67.96\\
+	4&97.86&84.38&94.77&65.39&67.75\\
+	5&98.02&84.42&95.64&66&67.02\\
+	6&98.07&85.07&96.58&65.85&67.16\\
+	7&98.21&85.5&97.34&66.22&67.88\\
+	8&97.28&84.79&97.35&66.2&67.85\\
+	9&97.06&85.61&97.9&67.09&67.68\\
+	10&97.86&86.54&97.19&67.29&68.06\\
+	11&97.89&87.19&97.89&67.95&68.66\\
+	12&98.77&87.25&97.36&68.78&69.27\\
+	13&99.76&86.37&97.8&67.84&69.83\\
+	14&100&86.86&97.79&68.07&68.97\\
+	15&99.11&74.96&72.17&68.23&68.23\\
+	16&99.72&74.45&72.65&68.42&69.23\\
+	17&100&75.27&73.45&68.63&69.79\\
+	18&99.92&75.6&73.43&67.7&69.29\\
+	19&100&75.3&72.44&67.32&70.04\\
+	20&100&74.64&72.88&68.31&70.76\\
+	21&100&75.63&73.09&69.22&70\\
+	22&100&74.9&72.81&68.72&69.13\\
+	23&100&75.61&72.83&69.42&68.81\\
+	24&100&75.98&72.4&69.24&67.94\\
+	25&99.64&76.83&72.3&69.87&68.4\\
+	26&95.47&81.97&93.57&66.64&64.64\\
+	27&96.24&82.14&94.46&66.47&65.15\\
+	28&96.21&81.27&93.56&66.49&64.93\\
+	29&95.78&81.88&92.99&66.62&65.09\\
+	30&96.06&81.12&92.34&66.63&65.86\\
+	31&95.36&81.11&91.94&66.93&65.61\\
+	32&96.1&80.41&91.23&67.92&66.05\\
+	33&95.59&81.34&91.25&68.7&66.33\\
+	34&96.38&81.73&91.01&68.44&66.86\\
+	35&95.74&82.53&90.03&68.72&66.97\\
+	36&96.65&81.95&89.23&69.25&67.22\\
+	\hline
+	\textbf{Avg.}&\textbf{97.92}&\textbf{81.21}&\textbf{87.94}&\textbf{67.44}&\textbf{67.81}\\
+	\hline\hline	
+\end{longtable}
 
 
-
-\begin{table}[!t]
+\begin{table}[h!]
 	\centering
 	\caption{Results on erosion detection on Raise under different attacks, using SVM with RBF kernel, 10-fold cross validation.}
 	\label{table:attacks2}
@@ -513,380 +513,356 @@ We applied a further test on understanding if the proposed method can detect the
 Finally, we want to determine the capability of our approach in distinguishing between morphological filters and other filters that produce similar results. In particular, we considered Gaussian lowpass and median filtering. In both cases, the filtered images are compressed and passed to the detector to reveal possible false alarms.
 % Tien's comment: to be done
 
-\begin{table*}[!t]
-	\centering
+\begin{longtable}{C{2cm}|C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}}
 	\caption{False Positive on 200 images from RAISE on erosion Detection. Images are in raw format, full resolution. The classifiers were trained on 800 images (eroded vs. non-filtered) and tested on the rest 200 images (filtered with pepper \& salt, Gaussian and median).}
-	\label{table:attacks}
-	\resizebox{\linewidth}{!}{
-	\begin{tabular}{c|ccccc}
-		\hline\hline
-		K&Pepper \& Salt&Gaussian (3x3)&Gaussian (5x5)&Median Filter (3x3)&Median Filter (5x5)\\
-		\hline
-		1&7&3&7&15&17\\
-		2&14&6&1&20&11\\
-		3&18&0&6&15&11\\
-		4&15&6&3&17&11\\
-		5&12&7&0&17&14\\
-		6&10&7&0&13&20\\
-		7&6&0&6&17&13\\
-		8&7&1&7&18&24\\
-		9&7&6&1&13&23\\
-		10&9&4&3&12&12\\
-		11&19&11&15&47&24\\
-		12&8&24&11&41&32\\
-		13&20&13&22&46&32\\
-		14&19&19&13&49&27\\
-		15&9&17&10&69&29\\
-		16&6&11&5&24&20\\
-		17&7&9&11&23&19\\
-		18&7&19&19&32&14\\
-		19&3&20&11&28&16\\
-		20&3&9&19&22&15\\
-		21&2&9&5&37&10\\
-		22&5&12&18&21&17\\
-		23&1&19&5&18&25\\
-		24&4&8&18&29&11\\
-		25&3&18&14&25&23\\
-		26&3&6&11&27&44\\
-		27&3&16&19&37&20\\
-		28&6&17&20&16&35\\
-		29&5&7&8&19&43\\
-		30&6&19&6&23&40\\
-		31&2&13&10&37&38\\
-		32&0&19&10&31&43\\
-		33&0&20&15&35&39\\
-		34&2&12&16&30&41\\
-		35&1&13&18&43&59\\
-		36&4&12&17&50&76\\
-		\hline
-		%Avg.&7.03&11.44&10.56&28.22&26.33\\
-		(Avg. in percentage)&3.51&5.72&5.28&14.11&13.17\\
-		
-		\hline\hline	
-	\end{tabular}}
-\end{table*}
+	\label{table:attacks}\\
+	\hline\hline
+	K&Pepper \& Salt&Gaussian (3x3)&Gaussian (5x5)&Median Filter (3x3)&Median Filter (5x5)\\
+	\hline
+	1&7&3&7&15&17\\
+	2&14&6&1&20&11\\
+	3&18&0&6&15&11\\
+	4&15&6&3&17&11\\
+	5&12&7&0&17&14\\
+	6&10&7&0&13&20\\
+	7&6&0&6&17&13\\
+	8&7&1&7&18&24\\
+	9&7&6&1&13&23\\
+	10&9&4&3&12&12\\
+	11&19&11&15&47&24\\
+	12&8&24&11&41&32\\
+	13&20&13&22&46&32\\
+	14&19&19&13&49&27\\
+	15&9&17&10&69&29\\
+	16&6&11&5&24&20\\
+	17&7&9&11&23&19\\
+	18&7&19&19&32&14\\
+	19&3&20&11&28&16\\
+	20&3&9&19&22&15\\
+	21&2&9&5&37&10\\
+	22&5&12&18&21&17\\
+	23&1&19&5&18&25\\
+	24&4&8&18&29&11\\
+	25&3&18&14&25&23\\
+	26&3&6&11&27&44\\
+	27&3&16&19&37&20\\
+	28&6&17&20&16&35\\
+	29&5&7&8&19&43\\
+	30&6&19&6&23&40\\
+	31&2&13&10&37&38\\
+	32&0&19&10&31&43\\
+	33&0&20&15&35&39\\
+	34&2&12&16&30&41\\
+	35&1&13&18&43&59\\
+	36&4&12&17&50&76\\
+	\hline
+	%Avg.&7.03&11.44&10.56&28.22&26.33\\
+	(Avg. in percentage)&3.51&5.72&5.28&14.11&13.17\\
+	
+	\hline\hline	
+\end{longtable}
 
 \section{Conclusions}
 In this work we propose an effective detection strategy to assess the use of morphological filtering in a gray-scale context. We deal with uncompressed images proposing a deterministic approach, reflection of the binary domain scenario, based on mathematical properties enjoyed by basic morphological operators. We additionally propose a modified pipeline to detect morphological processing in compressed images, exploiting difference histogram information as feature for Support Vector Machine classification. Finally, we present a testing phase in which both uncompressed and compressed scenarios are taken into consideration. Results show the effectiveness of our proposed approach in both cases.  
  
+\section*{Acknowledgment}
+The authors thank to Alain Malacarne for his valuable discussions and contributions in the experiments.
+
+\section*{References}
 \bibliography{refs}
 
 \appendix
 \section{Detailed Results on Compressed Images}
 \label{app:detailed_compress}
 
-\begin{table*}[ht!]
-	\centering
-	\begin{minipage}{0.48\linewidth}
-		\centering
+	\begin{longtable}{c|ccccccc}
+		%\centering
 		\caption{Results on erosion detection on UCID.}
-		\label{table:uciderosion}
-		\resizebox{\linewidth}{!}{
-			\begin{tabular}{c|ccccccc}
-				\hline\hline
-				\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
-				\hline
-				1&100&90.42&83.42&79.06&75.83&64.25&63.34\\
-				2&100&90.89&82.73&79.7&76.23&65.2&64.23\\
-				3&100&90.34&82.57&80.69&77.19&66.06&64.91\\
-				4&100&89.61&83.06&80.74&76.99&65.31&63.92\\
-				5&100&90.15&83.14&80.91&77.62&65.09&62.95\\
-				6&100&90.56&82.49&81.42&78.42&65.55&63.56\\
-				7&100&91.2&82.67&81.03&78.66&66.22&64.53\\
-				8&100&92.2&82.62&80.17&78.19&65.24&65.45\\
-				9&100&92.69&83.59&80&79.1&65.9&64.87\\
-				10&100&92.89&84.08&80.65&79.67&65.78&64.5\\
-				11&100&93.09&83.41&79.88&80.26&65.59&65.28\\
-				12&100&93.48&83.63&80.87&80.08&64.86&65.41\\
-				13&100&94.47&83.62&80.73&79.93&64.35&64.61\\
-				14&100&93.59&84.32&80.25&79.59&64.49&65.6\\
-				15&100&94.4&84.02&79.3&80.32&65.07&64.72\\
-				16&100&88.41&82.22&80.45&76.24&69.13&62.8\\
-				17&100&88.49&83.18&81.17&76.4&69.07&63.66\\
-				18&100&88.78&83.72&81.99&76.76&69.08&63.69\\
-				19&100&89.09&83.29&82.21&76.7&68.8&63.53\\
-				20&100&89.07&83.67&82.96&77.01&69.23&64.52\\
-				21&100&88.87&83.86&83.18&76.62&69.86&64.71\\
-				22&100&89.13&84.17&83.86&76.12&69.63&65.69\\
-				23&100&89.99&84.82&83.4&76.52&70.3&65.67\\
-				24&100&90.35&84.95&83.55&77.34&70.59&65.73\\
-				25&100&90.19&84.52&84.19&78.11&70.92&65.93\\
-				26&100&89.87&80.42&74.24&75.44&68.14&62.58\\
-				27&100&90.83&81.14&74.92&75.64&68.08&62.74\\
-				28&100&90.44&81.34&75.37&75.18&67.81&62.5\\
-				29&100&90.33&80.88&76.1&75.88&68.61&62.69\\
-				30&100&89.98&80.55&75.74&75.71&68.24&62.64\\
-				31&100&90.61&80.2&75.41&76.34&67.99&63.05\\
-				32&100&90.67&80.56&76.02&76.72&68.44&63.03\\
-				33&100&91.31&80.39&75.64&77.12&68&63.58\\
-				34&100&91.03&80.48&76.41&77.92&68.24&63.61\\
-				35&100&91.34&80.29&77.04&77.78&68.29&64.04\\
-				36&100&92.26&80.36&77.5&78.46&69.2&64.03\\
-				\hline
-				\textbf{Avg.}&\textbf{100}&\textbf{90.86}&\textbf{82.62}&\textbf{79.63}&\textbf{77.45}&\textbf{67.41}&\textbf{64.12}\\
-				\hline\hline	
-		\end{tabular}}
-	\end{minipage}
-	\begin{minipage}{0.48\linewidth}
-		\centering
+		\label{table:uciderosion}	\\
+		\hline\hline
+		\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
+		\hline
+		1&100&90.42&83.42&79.06&75.83&64.25&63.34\\
+		2&100&90.89&82.73&79.7&76.23&65.2&64.23\\
+		3&100&90.34&82.57&80.69&77.19&66.06&64.91\\
+		4&100&89.61&83.06&80.74&76.99&65.31&63.92\\
+		5&100&90.15&83.14&80.91&77.62&65.09&62.95\\
+		6&100&90.56&82.49&81.42&78.42&65.55&63.56\\
+		7&100&91.2&82.67&81.03&78.66&66.22&64.53\\
+		8&100&92.2&82.62&80.17&78.19&65.24&65.45\\
+		9&100&92.69&83.59&80&79.1&65.9&64.87\\
+		10&100&92.89&84.08&80.65&79.67&65.78&64.5\\
+		11&100&93.09&83.41&79.88&80.26&65.59&65.28\\
+		12&100&93.48&83.63&80.87&80.08&64.86&65.41\\
+		13&100&94.47&83.62&80.73&79.93&64.35&64.61\\
+		14&100&93.59&84.32&80.25&79.59&64.49&65.6\\
+		15&100&94.4&84.02&79.3&80.32&65.07&64.72\\
+		16&100&88.41&82.22&80.45&76.24&69.13&62.8\\
+		17&100&88.49&83.18&81.17&76.4&69.07&63.66\\
+		18&100&88.78&83.72&81.99&76.76&69.08&63.69\\
+		19&100&89.09&83.29&82.21&76.7&68.8&63.53\\
+		20&100&89.07&83.67&82.96&77.01&69.23&64.52\\
+		21&100&88.87&83.86&83.18&76.62&69.86&64.71\\
+		22&100&89.13&84.17&83.86&76.12&69.63&65.69\\
+		23&100&89.99&84.82&83.4&76.52&70.3&65.67\\
+		24&100&90.35&84.95&83.55&77.34&70.59&65.73\\
+		25&100&90.19&84.52&84.19&78.11&70.92&65.93\\
+		26&100&89.87&80.42&74.24&75.44&68.14&62.58\\
+		27&100&90.83&81.14&74.92&75.64&68.08&62.74\\
+		28&100&90.44&81.34&75.37&75.18&67.81&62.5\\
+		29&100&90.33&80.88&76.1&75.88&68.61&62.69\\
+		30&100&89.98&80.55&75.74&75.71&68.24&62.64\\
+		31&100&90.61&80.2&75.41&76.34&67.99&63.05\\
+		32&100&90.67&80.56&76.02&76.72&68.44&63.03\\
+		33&100&91.31&80.39&75.64&77.12&68&63.58\\
+		34&100&91.03&80.48&76.41&77.92&68.24&63.61\\
+		35&100&91.34&80.29&77.04&77.78&68.29&64.04\\
+		36&100&92.26&80.36&77.5&78.46&69.2&64.03\\
+		\hline
+		\textbf{Avg.}&\textbf{100}&\textbf{90.86}&\textbf{82.62}&\textbf{79.63}&\textbf{77.45}&\textbf{67.41}&\textbf{64.12}\\
+		\hline\hline	
+\end{longtable}
+
+		
+	\begin{longtable}{c|ccccccc}
 		\caption{Results on dilation detection on UCID.}
-		\label{table:uciddilation}
-		\resizebox{\linewidth}{!}{
-			\begin{tabular}{c|ccccccc}
-				\hline\hline
-				\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
-				\hline
-				1&100&89.24&83.18&80.05&75.29&65.35&63.34\\
-				2&100&88.4&82.29&81.01&76.16&65.08&63.93\\
-				3&100&88.1&81.66&81.54&75.77&65.49&64.77\\
-				4&100&88.11&82.34&81.51&75.33&65.17&65.4\\
-				5&100&89.09&82.67&82.35&74.89&65.95&66.36\\
-				6&100&89.99&82.85&82.43&75.42&65.94&67.35\\
-				7&100&89.28&82.35&83.15&75.81&65.53&67.89\\
-				8&100&89.9&83.04&82.9&75.06&66.12&68.67\\
-				9&100&90.46&83.42&82.3&75.99&66.64&67.95\\
-				10&100&91.03&82.55&81.76&75&67.59&68.91\\
-				11&100&90.76&83.13&80.9&75&67.69&68.3\\
-				12&100&91.28&83.21&81.69&75.84&67.9&67.33\\
-				13&100&91.44&83.85&81.01&76.02&68.6&66.94\\
-				14&100&90.49&83.33&81.7&76.56&68.58&66.35\\
-				15&100&91.33&84.22&82.61&75.65&69.13&66.05\\
-				16&100&90.05&82.22&81.15&77.25&70.23&62.8\\
-				17&100&90.66&82.24&81.36&77.96&70.63&62.47\\
-				18&100&90.5&82.21&81.39&78.31&70.22&63.29\\
-				19&100&90.14&82.77&81.87&78.69&70.71&63.16\\
-				20&100&89.72&83.18&81.64&78.59&70.46&63.26\\
-				21&100&89.68&83.39&81.82&78.39&70.2&63.25\\
-				22&100&89.94&83.58&82.17&78.19&70.05&63.96\\
-				23&100&90.06&83.57&82.45&77.88&69.65&64.52\\
-				24&100&89.97&83.96&83.34&78.36&70.41&64.91\\
-				25&100&90.89&84.61&83.67&77.88&70.18&64.91\\
-				26&100&89.91&81&73.87&75.78&69.02&62.27\\
-				27&100&89.73&80.83&74.19&76.59&69.83&63.22\\
-				28&100&89.99&80.75&74.78&76.2&70.08&63.66\\
-				29&100&89.58&81.46&75&76.21&70.63&63.38\\
-				30&100&89.76&82.18&74.7&76.52&70.24&63.19\\
-				31&100&90.08&82.47&75.24&76.92&70.01&63.77\\
-				32&100&90.73&82.92&76.12&77.72&69.69&63.46\\
-				33&100&90.41&82.88&75.96&78.03&69.94&64.2\\
-				34&100&91.27&83.3&76.42&78.67&70.55&64.98\\
-				35&100&91.62&84.22&77.26&78.44&70.67&64.63\\
-				36&100&92.09&85.22&76.96&78.57&71.66&65.01\\
-				\hline
-				\textbf{Avg.}&\textbf{100}&\textbf{90.16}&\textbf{82.86}&\textbf{79.95}&\textbf{76.80}&\textbf{68.77}&\textbf{64.94}\\
-				\hline\hline	
-		\end{tabular}}
-	\end{minipage}
-\end{table*}
+		\label{table:uciddilation}\\
+		\hline\hline
+		\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
+		\hline
+		1&100&89.24&83.18&80.05&75.29&65.35&63.34\\
+		2&100&88.4&82.29&81.01&76.16&65.08&63.93\\
+		3&100&88.1&81.66&81.54&75.77&65.49&64.77\\
+		4&100&88.11&82.34&81.51&75.33&65.17&65.4\\
+		5&100&89.09&82.67&82.35&74.89&65.95&66.36\\
+		6&100&89.99&82.85&82.43&75.42&65.94&67.35\\
+		7&100&89.28&82.35&83.15&75.81&65.53&67.89\\
+		8&100&89.9&83.04&82.9&75.06&66.12&68.67\\
+		9&100&90.46&83.42&82.3&75.99&66.64&67.95\\
+		10&100&91.03&82.55&81.76&75&67.59&68.91\\
+		11&100&90.76&83.13&80.9&75&67.69&68.3\\
+		12&100&91.28&83.21&81.69&75.84&67.9&67.33\\
+		13&100&91.44&83.85&81.01&76.02&68.6&66.94\\
+		14&100&90.49&83.33&81.7&76.56&68.58&66.35\\
+		15&100&91.33&84.22&82.61&75.65&69.13&66.05\\
+		16&100&90.05&82.22&81.15&77.25&70.23&62.8\\
+		17&100&90.66&82.24&81.36&77.96&70.63&62.47\\
+		18&100&90.5&82.21&81.39&78.31&70.22&63.29\\
+		19&100&90.14&82.77&81.87&78.69&70.71&63.16\\
+		20&100&89.72&83.18&81.64&78.59&70.46&63.26\\
+		21&100&89.68&83.39&81.82&78.39&70.2&63.25\\
+		22&100&89.94&83.58&82.17&78.19&70.05&63.96\\
+		23&100&90.06&83.57&82.45&77.88&69.65&64.52\\
+		24&100&89.97&83.96&83.34&78.36&70.41&64.91\\
+		25&100&90.89&84.61&83.67&77.88&70.18&64.91\\
+		26&100&89.91&81&73.87&75.78&69.02&62.27\\
+		27&100&89.73&80.83&74.19&76.59&69.83&63.22\\
+		28&100&89.99&80.75&74.78&76.2&70.08&63.66\\
+		29&100&89.58&81.46&75&76.21&70.63&63.38\\
+		30&100&89.76&82.18&74.7&76.52&70.24&63.19\\
+		31&100&90.08&82.47&75.24&76.92&70.01&63.77\\
+		32&100&90.73&82.92&76.12&77.72&69.69&63.46\\
+		33&100&90.41&82.88&75.96&78.03&69.94&64.2\\
+		34&100&91.27&83.3&76.42&78.67&70.55&64.98\\
+		35&100&91.62&84.22&77.26&78.44&70.67&64.63\\
+		36&100&92.09&85.22&76.96&78.57&71.66&65.01\\
+		\hline
+		\textbf{Avg.}&\textbf{100}&\textbf{90.16}&\textbf{82.86}&\textbf{79.95}&\textbf{76.80}&\textbf{68.77}&\textbf{64.94}\\
+		\hline\hline	
+\end{longtable}
 
-\begin{table*}[ht!]
-	\centering
-	\begin{minipage}{0.48\linewidth}
-		\centering
+
+		
+	\begin{longtable}{c|ccccccc}
 		\caption{Results on erosion detection on Dresden.}
-		\label{table:dresdenerosion}
-		\resizebox{\linewidth}{!}{
-			\begin{tabular}{c|ccccccc}
-				\hline\hline
-				\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
-				\hline
-				1&100&99.03&98.85&97.01&87.43&78.63&76.19\\
-				2&100&99.04&97.91&97.24&88.17&78.3&76.7\\
-				3&100&98.32&97.83&97.67&89.16&78.64&76.22\\
-				4&100&97.41&97.41&97.41&88.31&79.59&76.2\\
-				5&100&97.12&96.92&96.75&88.29&78.84&76.3\\
-				6&100&97.74&97.28&95.78&87.49&79.73&76.66\\
-				7&100&98.66&97.74&95.15&87.41&79.33&77.39\\
-				8&100&98.18&97.22&94.63&87.22&78.57&77.18\\
-				9&100&97.72&96.58&94.76&87.66&79.42&76.73\\
-				10&100&96.76&96.45&93.76&87.88&78.93&77.3\\
-				11&100&95.9&95.9&94.61&88.45&78.02&78.02\\
-				12&100&96.28&95.93&95.17&88.11&78.05&77.9\\
-				13&100&96.15&96.15&94.33&87.41&78.76&78.35\\
-				14&100&97&96.73&95.24&86.53&78.35&78.35\\
-				15&100&96.34&96.34&95.8&86.72&79.28&79.02\\
-				16&100&98.95&97.93&96.52&89.32&80.03&82.23\\
-				17&100&98.2&97.8&97.01&89.85&79.32&81.79\\
-				18&100&97.58&96.91&96.81&90.15&79.56&82.78\\
-				19&100&97.84&97.59&96.51&90.05&79.4&83.08\\
-				20&100&98.17&98.17&97.21&89.45&80.18&83.64\\
-				21&100&98.73&97.78&96.96&89.25&79.99&83.46\\
-				22&100&98.09&97.98&96.56&88.97&79.43&84.22\\
-				23&100&98.17&97.66&95.69&88.55&79.61&84.65\\
-				24&100&98.03&96.72&95.69&89&78.99&84.18\\
-				25&100&97.07&97.07&95.62&88.3&78.83&84.58\\
-				26&100&98.03&96.65&93.89&89.3&81.44&73.26\\
-				27&100&97.22&95.72&94.15&88.9&82.37&73.62\\
-				28&100&97.95&96.57&94.19&89.56&82.33&73.98\\
-				29&100&97.84&96.58&93.67&89.71&81.64&74.6\\
-				30&100&98.19&96.44&94.08&90.29&81.11&75.4\\
-				31&100&97.97&96.06&93.95&90.16&81.26&75.12\\
-				32&100&97.16&96.71&93.5&89.64&81.41&75.53\\
-				33&100&96.67&96.27&93.16&88.65&80.83&75.87\\
-				34&100&96.15&96.15&92.9&89.32&81.14&76.29\\
-				35&100&96.68&96.25&92.03&89.67&81.31&76.6\\
-				36&100&95.76&95.69&91.64&89.83&81.89&76.76\\
-				\hline
-				\textbf{Avg.}&100&\textbf{97.56}&\textbf{96.94}&\textbf{95.20}&\textbf{88.73}&\textbf{79.85}&\textbf{78.34}\\
-				\hline\hline	
-		\end{tabular}}
-	\end{minipage}
-	\begin{minipage}{0.48\linewidth}
-		\centering
-		\caption{Results on dilation detection on Dresden.}
-		\label{table:dresdendilation}
-		\resizebox{\linewidth}{!}{
-			\begin{tabular}{c|ccccccc}
-				\hline\hline
-				\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
-				\hline
-				1&100&98.32&98.32&96.74&87.78&79.34&73.81\\
-				2&100&97.86&97.86&96.67&88.29&79.2&74.7\\
-				3&100&98.41&98.16&97.06&89.27&79.79&74.9\\
-				4&100&97.59&97.59&96.72&88.79&80.75&73.98\\
-				5&100&96.9&96.9&96.5&88.14&80.9&73.64\\
-				6&100&97.26&97.26&96.03&88.85&80.69&74.33\\
-				7&100&96.35&96.35&96.35&88.18&79.84&74.31\\
-				8&100&95.9&95.9&95.87&88.43&79.66&74.23\\
-				9&100&96.47&96.18&96.18&87.66&80.51&74.3\\
-				10&100&97.34&97.14&96.73&87.65&79.95&73.4\\
-				11&100&96.93&96.93&96.75&87.2&80.72&72.66\\
-				12&100&97.7&96.52&96.39&87.23&81.69&72.22\\
-				13&100&97.37&96.36&95.62&87.53&81.27&72.15\\
-				14&100&98.35&95.99&95.99&86.79&80.45&72.65\\
-				15&100&97.95&95.26&95.26&87.78&79.62&72.27\\
-				16&100&98.83&97.58&96.86&90.24&80.21&75.01\\
-				17&100&99.81&98&97.47&89.36&80.72&74.82\\
-				18&100&99.26&98.06&98.06&88.43&81.13&74.74\\
-				19&100&99.05&97.06&97.06&89.2&81.46&75.02\\
-				20&100&99.96&97.5&97.21&88.78&81.36&75.73\\
-				21&100&99.53&97.17&97.17&88.51&81.68&76.2\\
-				22&100&99.12&97.52&97.52&88.51&81.56&75.7\\
-				23&100&98.32&96.7&96.7&88.83&81.32&75.99\\
-				24&100&97.5&95.83&95.83&89.82&81.12&76.95\\
-				25&100&98.05&96.75&95.38&89.64&80.21&77.03\\
-				26&100&97.84&97.51&94.81&89.69&82.31&74.12\\
-				27&100&98.45&97.07&94.71&90.24&81.63&74.83\\
-				28&100&98.65&96.95&95.65&90.14&81.76&75.04\\
-				29&100&98&96.53&96.16&89.31&81.92&75.79\\
-				30&100&97.64&97.21&95.28&90.04&82.78&75.83\\
-				31&100&97.06&96.36&95.41&89.09&82.69&76.52\\
-				32&100&97.75&95.98&95.35&89.21&82.52&77.19\\
-				33&100&97.67&95.95&95.21&88.83&82.3&77.55\\
-				34&100&98.33&95.31&94.61&88.82&81.63&77.79\\
-				35&100&97.44&96.01&94.76&89.09&82.55&78.31\\
-				36&100&96.55&95.67&93.8&89.14&81.79&79.17\\
-				\hline
-				\textbf{Avg.}&\textbf{100}&\textbf{97.93}&\textbf{96.82}&\textbf{96.11}&\textbf{88.74}&\textbf{81.08}&\textbf{75.08}\\
-				\hline\hline	
-		\end{tabular}}
-	\end{minipage}
-\end{table*}
+		\label{table:dresdenerosion}\\
+		\hline\hline
+		\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
+		\hline
+		1&100&99.03&98.85&97.01&87.43&78.63&76.19\\
+		2&100&99.04&97.91&97.24&88.17&78.3&76.7\\
+		3&100&98.32&97.83&97.67&89.16&78.64&76.22\\
+		4&100&97.41&97.41&97.41&88.31&79.59&76.2\\
+		5&100&97.12&96.92&96.75&88.29&78.84&76.3\\
+		6&100&97.74&97.28&95.78&87.49&79.73&76.66\\
+		7&100&98.66&97.74&95.15&87.41&79.33&77.39\\
+		8&100&98.18&97.22&94.63&87.22&78.57&77.18\\
+		9&100&97.72&96.58&94.76&87.66&79.42&76.73\\
+		10&100&96.76&96.45&93.76&87.88&78.93&77.3\\
+		11&100&95.9&95.9&94.61&88.45&78.02&78.02\\
+		12&100&96.28&95.93&95.17&88.11&78.05&77.9\\
+		13&100&96.15&96.15&94.33&87.41&78.76&78.35\\
+		14&100&97&96.73&95.24&86.53&78.35&78.35\\
+		15&100&96.34&96.34&95.8&86.72&79.28&79.02\\
+		16&100&98.95&97.93&96.52&89.32&80.03&82.23\\
+		17&100&98.2&97.8&97.01&89.85&79.32&81.79\\
+		18&100&97.58&96.91&96.81&90.15&79.56&82.78\\
+		19&100&97.84&97.59&96.51&90.05&79.4&83.08\\
+		20&100&98.17&98.17&97.21&89.45&80.18&83.64\\
+		21&100&98.73&97.78&96.96&89.25&79.99&83.46\\
+		22&100&98.09&97.98&96.56&88.97&79.43&84.22\\
+		23&100&98.17&97.66&95.69&88.55&79.61&84.65\\
+		24&100&98.03&96.72&95.69&89&78.99&84.18\\
+		25&100&97.07&97.07&95.62&88.3&78.83&84.58\\
+		26&100&98.03&96.65&93.89&89.3&81.44&73.26\\
+		27&100&97.22&95.72&94.15&88.9&82.37&73.62\\
+		28&100&97.95&96.57&94.19&89.56&82.33&73.98\\
+		29&100&97.84&96.58&93.67&89.71&81.64&74.6\\
+		30&100&98.19&96.44&94.08&90.29&81.11&75.4\\
+		31&100&97.97&96.06&93.95&90.16&81.26&75.12\\
+		32&100&97.16&96.71&93.5&89.64&81.41&75.53\\
+		33&100&96.67&96.27&93.16&88.65&80.83&75.87\\
+		34&100&96.15&96.15&92.9&89.32&81.14&76.29\\
+		35&100&96.68&96.25&92.03&89.67&81.31&76.6\\
+		36&100&95.76&95.69&91.64&89.83&81.89&76.76\\
+		\hline
+		\textbf{Avg.}&100&\textbf{97.56}&\textbf{96.94}&\textbf{95.20}&\textbf{88.73}&\textbf{79.85}&\textbf{78.34}\\
+		\hline\hline	
+\end{longtable}
 
-\begin{table*}[ht!]
-	\centering
-	\begin{minipage}{0.48\linewidth}
-		\centering
+
+\begin{longtable}{c|ccccccc}
+		\caption{Results on dilation detection on Dresden.}
+		\label{table:dresdendilation}\\
+		\hline\hline
+		\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
+		\hline
+		1&100&98.32&98.32&96.74&87.78&79.34&73.81\\
+		2&100&97.86&97.86&96.67&88.29&79.2&74.7\\
+		3&100&98.41&98.16&97.06&89.27&79.79&74.9\\
+		4&100&97.59&97.59&96.72&88.79&80.75&73.98\\
+		5&100&96.9&96.9&96.5&88.14&80.9&73.64\\
+		6&100&97.26&97.26&96.03&88.85&80.69&74.33\\
+		7&100&96.35&96.35&96.35&88.18&79.84&74.31\\
+		8&100&95.9&95.9&95.87&88.43&79.66&74.23\\
+		9&100&96.47&96.18&96.18&87.66&80.51&74.3\\
+		10&100&97.34&97.14&96.73&87.65&79.95&73.4\\
+		11&100&96.93&96.93&96.75&87.2&80.72&72.66\\
+		12&100&97.7&96.52&96.39&87.23&81.69&72.22\\
+		13&100&97.37&96.36&95.62&87.53&81.27&72.15\\
+		14&100&98.35&95.99&95.99&86.79&80.45&72.65\\
+		15&100&97.95&95.26&95.26&87.78&79.62&72.27\\
+		16&100&98.83&97.58&96.86&90.24&80.21&75.01\\
+		17&100&99.81&98&97.47&89.36&80.72&74.82\\
+		18&100&99.26&98.06&98.06&88.43&81.13&74.74\\
+		19&100&99.05&97.06&97.06&89.2&81.46&75.02\\
+		20&100&99.96&97.5&97.21&88.78&81.36&75.73\\
+		21&100&99.53&97.17&97.17&88.51&81.68&76.2\\
+		22&100&99.12&97.52&97.52&88.51&81.56&75.7\\
+		23&100&98.32&96.7&96.7&88.83&81.32&75.99\\
+		24&100&97.5&95.83&95.83&89.82&81.12&76.95\\
+		25&100&98.05&96.75&95.38&89.64&80.21&77.03\\
+		26&100&97.84&97.51&94.81&89.69&82.31&74.12\\
+		27&100&98.45&97.07&94.71&90.24&81.63&74.83\\
+		28&100&98.65&96.95&95.65&90.14&81.76&75.04\\
+		29&100&98&96.53&96.16&89.31&81.92&75.79\\
+		30&100&97.64&97.21&95.28&90.04&82.78&75.83\\
+		31&100&97.06&96.36&95.41&89.09&82.69&76.52\\
+		32&100&97.75&95.98&95.35&89.21&82.52&77.19\\
+		33&100&97.67&95.95&95.21&88.83&82.3&77.55\\
+		34&100&98.33&95.31&94.61&88.82&81.63&77.79\\
+		35&100&97.44&96.01&94.76&89.09&82.55&78.31\\
+		36&100&96.55&95.67&93.8&89.14&81.79&79.17\\
+		\hline
+		\textbf{Avg.}&\textbf{100}&\textbf{97.93}&\textbf{96.82}&\textbf{96.11}&\textbf{88.74}&\textbf{81.08}&\textbf{75.08}\\
+		\hline\hline	
+\end{longtable}
+
+		
+	\begin{longtable}{c|ccccccc}
 		\caption{Results on erosion detection on Raise1K.}
-		\label{table:raise}
-		\resizebox{\linewidth}{!}{
-			\begin{tabular}{c|ccccccc}
-				\hline\hline
-				\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
-				\hline
-				1&100&98.78&97.34&94.23&88.17&78.26&77\\
-				2&100&98.97&97.53&94.54&88.53&78.57&77.63\\
-				3&100&99.03&97.16&95.24&87.96&77.6&76.94\\
-				4&100&98.65&96.34&94.41&87.19&78.56&76.42\\
-				5&100&99.08&96.15&94.82&86.43&78.8&76.53\\
-				6&100&98.16&95.42&94.05&86.89&77.9&76.45\\
-				7&100&98.17&95.96&93.78&85.98&77.18&77.18\\
-				8&100&97.99&95.47&94.61&86.4&77.76&76.68\\
-				9&100&97.97&96.4&95.26&86.05&78.21&77.42\\
-				10&100&97.96&95.68&94.33&86.19&78.35&78.25\\
-				11&100&97.27&96.43&93.35&85.98&78.16&78.16\\
-				12&100&97.42&97.29&94.21&85.16&78.02&78.02\\
-				13&100&97.82&97.46&94.98&84.73&77.67&77.67\\
-				14&100&96.87&96.87&95.76&84.48&77.95&77.95\\
-				15&100&95.97&95.97&95.97&85.26&77.11&77.11\\
-				16&100&98.55&98.04&96.94&91.52&82.99&82.22\\
-				17&100&98.8&98.03&97.65&91.63&83.14&81.96\\
-				18&100&99.74&98.96&96.69&90.8&82.75&81\\
-				19&100&98.83&98.83&96.37&90.57&83.32&81.53\\
-				20&100&98.58&98.58&96.4&90.51&82.36&81.39\\
-				21&100&98.88&97.66&97.19&90.98&81.42&81.13\\
-				22&100&98.85&96.8&96.8&90.39&80.9&80.9\\
-				23&100&99.06&97.35&96.13&90.51&80.11&80.04\\
-				24&100&99.47&96.72&95.33&90.19&80.86&79.3\\
-				25&100&99.94&96.1&95.21&90.71&79.97&78.6\\
-				26&100&99.32&95.18&95.18&91.67&80.78&78.27\\
-				27&100&99.55&95.64&94.86&92.37&81.04&79.24\\
-				28&100&99.84&94.67&94.67&91.68&81.96&80.19\\
-				29&100&99.31&94.48&94.48&91.66&82.47&79.48\\
-				30&100&99.09&93.48&93.48&91.1&83.07&78.72\\
-				31&100&99.22&93.21&93.21&90.75&83.6&77.83\\
-				32&100&99.76&93.58&92.95&90.37&83.68&77.71\\
-				33&100&98.82&94.35&92.19&90.34&83.25&76.79\\
-				34&100&98.21&94.94&92.48&90.3&82.73&77.3\\
-				35&100&98.2&94.98&93&90.04&82.23&77.45\\
-				36&100&99.12&95.93&92.68&90.56&82.54&77.42\\
-				
-				\hline
-				\textbf{Avg.}&\textbf{100}&\textbf{98.66}&\textbf{96.25}&\textbf{94.82}&\textbf{89.00}&\textbf{80.42}&\textbf{78.55}\\
-				\hline\hline	
-		\end{tabular}}
-	\end{minipage}
-	\begin{minipage}{0.48\linewidth}
-		\centering
+		\label{table:raise}\\
+		\hline\hline
+		\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
+		\hline
+		1&100&98.78&97.34&94.23&88.17&78.26&77\\
+		2&100&98.97&97.53&94.54&88.53&78.57&77.63\\
+		3&100&99.03&97.16&95.24&87.96&77.6&76.94\\
+		4&100&98.65&96.34&94.41&87.19&78.56&76.42\\
+		5&100&99.08&96.15&94.82&86.43&78.8&76.53\\
+		6&100&98.16&95.42&94.05&86.89&77.9&76.45\\
+		7&100&98.17&95.96&93.78&85.98&77.18&77.18\\
+		8&100&97.99&95.47&94.61&86.4&77.76&76.68\\
+		9&100&97.97&96.4&95.26&86.05&78.21&77.42\\
+		10&100&97.96&95.68&94.33&86.19&78.35&78.25\\
+		11&100&97.27&96.43&93.35&85.98&78.16&78.16\\
+		12&100&97.42&97.29&94.21&85.16&78.02&78.02\\
+		13&100&97.82&97.46&94.98&84.73&77.67&77.67\\
+		14&100&96.87&96.87&95.76&84.48&77.95&77.95\\
+		15&100&95.97&95.97&95.97&85.26&77.11&77.11\\
+		16&100&98.55&98.04&96.94&91.52&82.99&82.22\\
+		17&100&98.8&98.03&97.65&91.63&83.14&81.96\\
+		18&100&99.74&98.96&96.69&90.8&82.75&81\\
+		19&100&98.83&98.83&96.37&90.57&83.32&81.53\\
+		20&100&98.58&98.58&96.4&90.51&82.36&81.39\\
+		21&100&98.88&97.66&97.19&90.98&81.42&81.13\\
+		22&100&98.85&96.8&96.8&90.39&80.9&80.9\\
+		23&100&99.06&97.35&96.13&90.51&80.11&80.04\\
+		24&100&99.47&96.72&95.33&90.19&80.86&79.3\\
+		25&100&99.94&96.1&95.21&90.71&79.97&78.6\\
+		26&100&99.32&95.18&95.18&91.67&80.78&78.27\\
+		27&100&99.55&95.64&94.86&92.37&81.04&79.24\\
+		28&100&99.84&94.67&94.67&91.68&81.96&80.19\\
+		29&100&99.31&94.48&94.48&91.66&82.47&79.48\\
+		30&100&99.09&93.48&93.48&91.1&83.07&78.72\\
+		31&100&99.22&93.21&93.21&90.75&83.6&77.83\\
+		32&100&99.76&93.58&92.95&90.37&83.68&77.71\\
+		33&100&98.82&94.35&92.19&90.34&83.25&76.79\\
+		34&100&98.21&94.94&92.48&90.3&82.73&77.3\\
+		35&100&98.2&94.98&93&90.04&82.23&77.45\\
+		36&100&99.12&95.93&92.68&90.56&82.54&77.42\\
+		
+		\hline
+		\textbf{Avg.}&\textbf{100}&\textbf{98.66}&\textbf{96.25}&\textbf{94.82}&\textbf{89.00}&\textbf{80.42}&\textbf{78.55}\\
+		\hline\hline	
+\end{longtable}
+
+	\begin{longtable}{c|ccccccc}
 		\caption{Results on dilation detection on Raise1K.}
-		\label{table:raisedilation}
-		\resizebox{\linewidth}{!}{
-			\begin{tabular}{c|ccccccc}
-				\hline\hline
-				\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
-				\hline
-				1&100&98.22&97.81&94.74&88.46&77.85&77.46\\
-				2&100&98.07&98.07&93.79&88.97&76.87&76.73\\
-				3&100&98.25&97.33&93.83&89.76&76.98&76.14\\
-				4&100&99.04&98.33&94.55&90.07&76.83&75.66\\
-				5&100&99.04&99.04&95.13&90.22&76.34&74.74\\
-				6&100&99.12&99.12&94.24&91.18&75.63&75.42\\
-				7&100&99.75&99.72&94.73&91.09&75.31&75.31\\
-				8&100&99.25&99.25&93.81&91.07&74.31&74.31\\
-				9&100&99.02&98.36&94.58&91.61&73.89&73.89\\
-				10&100&98.94&97.53&95.42&91.52&74.45&74.45\\
-				11&100&98.48&97.41&94.56&90.57&74.17&74.17\\
-				12&100&97.59&97.59&94.25&89.65&73.83&73.83\\
-				13&100&96.83&96.83&95.24&90.63&74.53&73.67\\
-				14&100&96.17&96.17&94.95&91.07&74.61&73.2\\
-				15&100&95.26&95.26&94.62&90.53&74.11&72.3\\
-				16&100&99.36&97.12&96.13&92.52&82.68&81.93\\
-				17&100&99.49&97.96&95.71&93.43&82.58&81.13\\
-				18&100&99.92&98.49&96.06&92.55&83.06&80.91\\
-				19&100&99.92&98.23&96.35&91.65&83.39&80.53\\
-				20&100&98.15&98.15&96.87&92.21&83.2&80.4\\
-				21&100&97.56&97.56&96.04&92.54&83.23&80.29\\
-				22&100&97.97&96.76&95.07&92.03&84.19&80.78\\
-				23&100&97.49&97.09&94.21&92.03&84.86&81.53\\
-				24&100&98.19&96.81&93.28&91.36&84.09&81.77\\
-				25&100&98.14&97.07&92.32&90.7&84.6&82.03\\
-				26&100&97.62&97.62&91.68&91.52&83.68&81.25\\
-				27&100&96.9&96.9&90.72&90.72&82.92&80.97\\
-				28&100&96.95&96.95&90.25&90.25&83.39&81.19\\
-				29&100&96.87&96.02&90.94&90.86&84.3&80.67\\
-				30&100&96.87&96.87&91.06&90.65&83.8&80.4\\
-				31&100&96.3&96.3&90.89&90.44&84.72&81.05\\
-				32&100&96.97&96.39&90.12&90.12&84.97&82.03\\
-				33&100&97.66&97.08&91.1&91.1&85.53&81.23\\
-				34&100&97.25&96.44&91.9&91.9&86.06&81.1\\
-				35&100&97.73&96.94&92.24&91.36&85.91&82.08\\
-				36&100&96.86&96.86&92.68&90.48&86.87&82.59\\
-				
-				\hline
-				\textbf{Avg.}&\textbf{100}&\textbf{97.98}&\textbf{97.43}&\textbf{93.72}&\textbf{91.02}&\textbf{80.49}&\textbf{78.53}\\
-				\hline\hline	
-		\end{tabular}}
-	\end{minipage}
-\end{table*}
+		\label{table:raisedilation}\\	
+		\hline\hline
+		\textbf{K}&\textbf{QF = 100}&\textbf{95}&\textbf{90}&\textbf{85}&\textbf{80}&\textbf{75}&\textbf{70}\\
+		\hline
+		1&100&98.22&97.81&94.74&88.46&77.85&77.46\\
+		2&100&98.07&98.07&93.79&88.97&76.87&76.73\\
+		3&100&98.25&97.33&93.83&89.76&76.98&76.14\\
+		4&100&99.04&98.33&94.55&90.07&76.83&75.66\\
+		5&100&99.04&99.04&95.13&90.22&76.34&74.74\\
+		6&100&99.12&99.12&94.24&91.18&75.63&75.42\\
+		7&100&99.75&99.72&94.73&91.09&75.31&75.31\\
+		8&100&99.25&99.25&93.81&91.07&74.31&74.31\\
+		9&100&99.02&98.36&94.58&91.61&73.89&73.89\\
+		10&100&98.94&97.53&95.42&91.52&74.45&74.45\\
+		11&100&98.48&97.41&94.56&90.57&74.17&74.17\\
+		12&100&97.59&97.59&94.25&89.65&73.83&73.83\\
+		13&100&96.83&96.83&95.24&90.63&74.53&73.67\\
+		14&100&96.17&96.17&94.95&91.07&74.61&73.2\\
+		15&100&95.26&95.26&94.62&90.53&74.11&72.3\\
+		16&100&99.36&97.12&96.13&92.52&82.68&81.93\\
+		17&100&99.49&97.96&95.71&93.43&82.58&81.13\\
+		18&100&99.92&98.49&96.06&92.55&83.06&80.91\\
+		19&100&99.92&98.23&96.35&91.65&83.39&80.53\\
+		20&100&98.15&98.15&96.87&92.21&83.2&80.4\\
+		21&100&97.56&97.56&96.04&92.54&83.23&80.29\\
+		22&100&97.97&96.76&95.07&92.03&84.19&80.78\\
+		23&100&97.49&97.09&94.21&92.03&84.86&81.53\\
+		24&100&98.19&96.81&93.28&91.36&84.09&81.77\\
+		25&100&98.14&97.07&92.32&90.7&84.6&82.03\\
+		26&100&97.62&97.62&91.68&91.52&83.68&81.25\\
+		27&100&96.9&96.9&90.72&90.72&82.92&80.97\\
+		28&100&96.95&96.95&90.25&90.25&83.39&81.19\\
+		29&100&96.87&96.02&90.94&90.86&84.3&80.67\\
+		30&100&96.87&96.87&91.06&90.65&83.8&80.4\\
+		31&100&96.3&96.3&90.89&90.44&84.72&81.05\\
+		32&100&96.97&96.39&90.12&90.12&84.97&82.03\\
+		33&100&97.66&97.08&91.1&91.1&85.53&81.23\\
+		34&100&97.25&96.44&91.9&91.9&86.06&81.1\\
+		35&100&97.73&96.94&92.24&91.36&85.91&82.08\\
+		36&100&96.86&96.86&92.68&90.48&86.87&82.59\\
+		
+		\hline
+		\textbf{Avg.}&\textbf{100}&\textbf{97.98}&\textbf{97.43}&\textbf{93.72}&\textbf{91.02}&\textbf{80.49}&\textbf{78.53}\\
+		\hline\hline	
+\end{longtable}
 
 \end{document}
