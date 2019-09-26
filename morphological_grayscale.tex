@@ -231,7 +231,7 @@ The proposed detector has been tested in various practical scenarios as follows:
 \begin{itemize}
 \item The first set of tests were performed in order to understand the impact of the parameters as well as to select a proper classifier. Based on the setups found on this set of tests, we kept the best setups (in term of performance) for the next tests.
 
-\item The second set of tests refers to the detection of morphological filtering on compressed images, using JPEG at various quality factors. In this case, we want to establish the accuracy of the detector in discriminating filtered vs. unfiltered images, in classifying the type of operator (erosion vs. dilation), and finally in determining the exact structuring element used for filtering. 
+\item The second set of tests refers to the detection of morphological filtering. In this case, we want to establish the accuracy of the detector in discriminating filtered vs. unfiltered images, in classifying the type of operator (erosion vs. dilation), and finally in determining the exact structuring element used for filtering, both in uncompressed and in compressed by JPEG at various quality factors. 
 
 \item The third set of tests concerns noise attacks. In this case, the test image is contaminated with random noise and then compressed. Also in this case we determine the accuracy of the detector in determining the presence and type of filtering and the structuring element used.
 
@@ -277,46 +277,46 @@ In order to understand the impact of the parameters as well as to select a prope
 
 The classifier receives in input the histogram of the differences between the input image and the relevant opened (closed) image and returns a binary decision. An important aspect is the training of the classifier. In fact, there is a clear dependency of the image statistics on the level of compression applied, which is reflected on the characteristics of the histogram. As an example, Fig. \ref{fig:hist_ero_80} shows the same situation of Fig. \ref{fig:hist_ero} at a lower quality factor. It can be observed that the two distributions are still well separable, but the histogram related to the filtered image shows a longer tail, due to the larger artifacts introduced by the compression.
 
-\begin{figure}[!h]%
+\begin{figure}[t!]%
 	\centering
 	\includegraphics[scale=0.55]{hist_ero_80.eps}
 	\caption{Same case of Fig. \ref{fig:hist_ero} after compression at $QF = 80$.}
 	\label{fig:hist_ero_80}%
 \end{figure}
 
-Accordingly, we decided to train a set of classifiers for varying JPEG quality factors, from 100 to 70. During the test phase, we tested with different classifiers: k-NN, decision trees, naive Bayes classifier, and SVM, and empirically decided to use SVM with the radial basis function (RBF) kernel. 
-
-We also note that given the appropriate quality factor, the histograms of differences show a peculiar behavior only if the detector parameters match the input filter in both the operator (erosion or dilation) and the structural element (kernel), whereas such behavior is never found in all the other combinations. It is important to notice that the application of the detector to an unfiltered image or to an image filtered with a different combination of operator and/or kernel produces similar results, i.e., only the matching detector responds to the filtered image. As an example, in Fig. \ref{fig:hist_dil_ero_same} we show the histograms deriving from the application of an erosion detector to an eroded and a dilated image, both with the same kernel. It can be observed that the dilated image responds similarly to the uncompressed image in Fig. \ref{fig:hist_ero}. Analogously, in Fig. \ref{fig:hist_ero_ero_diff}, we compare the histograms deriving from the erosion detector applied to two eroded images, one with the same kernel and the other with a different one. Also in this case, the image filtered with a different kernel responds as unfiltered. Finally, in Fig. \ref{fig:hist_ero_ero_albero} we show the case of application of the erosion detector to two images filtered with kernels belonging to the same group (i.e., one can be obtained from the other by dilation). As expected from Theorem~\ref{theorem_2}, the two histograms are almost overlapped, since both show the statistical properties of a filtered image.
-
-\begin{figure}[!ht]
+\begin{figure}[t!]
 	\centering
 	\includegraphics[scale=0.55]{hist_dil_ero_same.eps}
 	\caption{Histograms resulting from dilated and eroded images produced with the same structuring element, after compression at QF=95 and erosion detection.}
 	\label{fig:hist_dil_ero_same}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[t!]
 	\centering
 	\includegraphics[scale=0.55]{hist_ero_ero_diff.eps}
 	\caption{Histograms resulting from eroded images produced with unrelated structuring elements, after compression at QF=95 and erosion detection.}
 	\label{fig:hist_ero_ero_diff}
 \end{figure}
 
-\begin{figure}[!ht]
+\begin{figure}[t!]
 	\centering
 	\includegraphics[scale=0.55]{hist_ero_ero_albero.eps}
 	\caption{Histograms resulting from eroded images produced with structuring element $B$ and its dilated version $B^*$, after compression at QF=95 and erosion detection.}
 	\label{fig:hist_ero_ero_albero}
 \end{figure}
 
-For some other choices, for example block size or $\alpha_{th}$, all values are empirically selected and are reported in Table~\ref{tab:sensibility}. 
+Accordingly, we decided to train a set of classifiers for varying JPEG quality factors, from 100 to 70. During the test phase, we tested with different classifiers: k-NN, decision trees, naive Bayes classifier, and SVM, and empirically decided to use SVM with the radial basis function (RBF) kernel. 
 
-\subsection{Experimental Results on Compressed Images}
+We also note that given the appropriate quality factor, the histograms of differences show a peculiar behavior only if the detector parameters match the input filter in both the operator (erosion or dilation) and the structural element (kernel), whereas such behavior is never found in all the other combinations. It is important to notice that the application of the detector to an unfiltered image or to an image filtered with a different combination of operator and/or kernel produces similar results, i.e., only the matching detector responds to the filtered image. As an example, in Fig. \ref{fig:hist_dil_ero_same} we show the histograms deriving from the application of an erosion detector to an eroded and a dilated image, both with the same kernel. It can be observed that the dilated image responds similarly to the uncompressed image in Fig. \ref{fig:hist_ero}. Analogously, in Fig. \ref{fig:hist_ero_ero_diff}, we compare the histograms deriving from the erosion detector applied to two eroded images, one with the same kernel and the other with a different one. Also in this case, the image filtered with a different kernel responds as unfiltered. Finally, in Fig. \ref{fig:hist_ero_ero_albero} we show the case of application of the erosion detector to two images filtered with kernels belonging to the same group (i.e., one can be obtained from the other by dilation). As expected from Theorem~\ref{theorem_2}, the two histograms are almost overlapped, since both show the statistical properties of a filtered image.
+
+For some other choices, for example the block size or $\alpha_{th}$, all values are empirically selected and are reported in Table~\ref{tab:sensibility}. 
+
+\subsection{Distinguishing between Non-filtered versus Morphological Filtered Images}
 \label{sec:compr_res}
 
 \subsubsection{Experimental Results on Uncompressed Images}
 
-Before testing on compressed images, we ran a test on uncompressed images in order to confirm the deterministic nature of the proposed approach on unpressed images. Since the detection strategy in this case is the very same proposed in \cite{de2017detecting}, we followed their general approach for deriving results relative to uncompressed greyscale images. Each image has been processed with erosion and dilation operators considering all the 36 kernels.
+We ran a test on uncompressed images in order to confirm the deterministic nature of the proposed approach on unpressed images. Since the detection strategy in this case is the very same proposed in \cite{de2017detecting}, we followed their general approach for deriving results relative to uncompressed greyscale images. Each image has been processed with erosion and dilation operators considering all the 36 kernels.
 
 All images, along with their unprocessed versions, were fed to both dilation and erosion detectors. For each image, all 36 kernels are tested, returning either the largest kernel with perfect match between input and output or no detection if all kernels fail. All three datasets result in 100\% accuracy in discriminating the presence and the type of morphological filter, as reported in Table \ref{tab1:det_acc}.
 
@@ -338,11 +338,9 @@ All images, along with their unprocessed versions, were fed to both dilation and
 \end{table}
 
 \subsubsection{Experimental Results on Compressed Images}
-
-%\subsubsection{Training Phase}
-
+%
 In order to test the proposed approach on JPEG compressed images, we considered a set of seven different quality factors with $QF \in \{100,95,90,85,80,75,70\}$, with 14 $(7\times 2)$ binary classifiers, respectively,
-using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$. Shown in Table~\ref{table:detection_results} are the average results (over all kernels) of the proposed method on three datasets at the seven quality factors. The detailed results for all kernels, both two morphological operators over all three datasets are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation} in \ref{app:detailed_compress}. According to the results, we can observe that the proposed method can provide high detection performance on low compression level (i.e., high factor quality - $QF \ge 80$) images with the accurac over $76.8\%$ on all datasets. At higher compression level, the performance reduced significantly. The resolution also plays an important role as can be seen from the results that UCID has lower performance than Dresden and Raise. It is also interesting to notice that there is little difference between Dresden and Raise, which is believed that because of the resolution of the images. To have deeper understanding of the impact of the image resolution, we ran another test on different image resolution, and the results (shown in Table~\ref{table:resolutionerosion}) confirmed our observation in the first set of tests that the proposed method can give good performance for the resolution from about $1,000 \times 1,000$.
+using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$. Shown in Table~\ref{table:detection_results} are the average results (over all kernels) of the proposed method on three datasets at the seven quality factors. The detailed results for all kernels, both two morphological operators over all three datasets are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation} in \ref{app:detailed_compress}. According to the results, we can observe that the proposed method can provide high detection performance on low compression level (i.e., high factor quality - $QF \ge 80$) images with the accurac over $76.8\%$ on all datasets. At higher compression level, the performance reduced significantly. The resolution also plays an important role as can be seen from the results that UCID has lower performance than Dresden and Raise. It is also interesting to notice that there is little difference between Dresden and Raise, which is believed that because of the resolution of the images. To have a deeper understanding of the impact of the image resolution, we ran another test on different image resolution, and the results confirmed our observation in the first set of tests that the proposed method can give good performance (over 90\%) for the resolution from about $1,000 \times 1,000$. The detailed results are shown in Table~\ref{table:resolutionerosion} in \ref{app:detailed_compress}.
 
 \begin{table*}
 	\centering
@@ -365,11 +363,7 @@ using a Gaussian kernel with grid-search for the parameters. We apply k-Fold val
 	\end{tabular}}
 \end{table*}
 
-
-
-
-
-The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect using different classifiers. Shown in Table~\ref{table:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable since applying some small kernels together may create the same results as if we apply with the bigger kernels. In binary image, this effect can be observed very clear and it has been discussed in \cite{DeNatale2016}.
+The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect using different classifiers. Shown in Table~\ref{table:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small size kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable as it is the results from Theorem~\ref{theorem_2}.
 
 \begin{sidewaystable}[!htbp]
 	\centering
@@ -381,7 +375,7 @@ The second test in this set is to analyse the impact of different kernels. We ap
 \subsection{Detection Results under Different Attacks}
 \label{subsec:result_attacks}
 
-The third set of tests concerns noise attacks. In the first test, each image is applied the morphological filters and then contaminated with a noise. Table~\ref{table:attacks1} shows the dilation detection results under five different attacks: Pepper \& salt noise, Gaussian filtering, Median filtering, scaling at 1.1x and scaling at 0.9x. It is shown that the proposed method can reveal the morphological after the images were added some noises (e.g., pepper \& salt) or altered at small level (e.g., filtered by a Gaussian $3 \times 3$), but the proposed method does not work with interpolation attacks (e.g., resizing). 
+The third set of tests concerns noise attacks. In the first test, each image is applied the morphological filters and then contaminated with a noise. Five different attacks: Pepper \& salt noise, Gaussian filtering, Median filtering, scaling at 1.1x and scaling at 0.9x were applied and the precision for dilation detection on RAISE1k are: 97.92\%, 81.21\%, 87.94\%, 67.44\%, and 67.81\%, respectively. The detailed results are shown in Table~\ref{table:attacks1} in \ref{app:detailed_compress}. According to the results, we can claim that the proposed method is robust under additional noise attacks, e.g., pepper \& salt, or under low-pass filtering, e.g., Gaussian filtering, but not with interpolation attacks (e.g., resizing). 
 
 We applied a further test on understanding if the proposed method can detect the morphological filter under an attack and followed by a compression. In this test, each image after applied the morphological filter is contaminated with a noise (only three first attacks were applied), and then is compressed under different quality factors.  The results in Table~\ref{table:attacks2} shown that the proposed method can still detect the morphological filter, however, its performance is getting worst as the compression quality factor increasing.  
 
