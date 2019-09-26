@@ -33,7 +33,7 @@
 
 \begin{frontmatter}
 
-\title{Tien's comment: I am updating, please check it after 10:00am Thursday 26 Sept - Morphological Filter Detector for Forensics~Applications}
+\title{Morphological Filter Detector for Forensics~Applications}
 
 %% Group authors per affiliation:
 \author{Giulia Boato}
@@ -67,7 +67,7 @@ In the last decade, researchers and practitioners in multimedia forensics have b
 A recent trend tries to define universal detectors able to reveal manipulations independently from the type of processing applied, which could leverage media authentication in applications like journalism or social media analysis \cite{noiseprint}. 
 On the other hand, many methods have been proposed to detect different types of forgeries, which is very relevant for diverse applications, in particular digital investigations - given that images, audio tracks and video sequences now play a crucial role in modern investigations where they often represent digital evidences to the court \cite{forlab} - and multimedia data phylogeny aiming at recovering and tracing back the life-cycle of an image or a video \cite{Bestagini2016, Dias2012, Oliveira2016, Costa2014}.
 
-This broad class of specific manipulation detectors includes the identification of pasted or inserted regions \cite{cm2, cm3, cm4, spl2, spl3}, resizing \cite{fernando2017}, re-compression \cite{PBPG2017-TIFS},  inconsistencies in the geometry and illumination of the image due to possible manipulations \cite{geom1, geom2, phys1}, and various types of non-linear filtering (especially median) \cite{Bahrami2015, Cao2014, Cao2011, Fridrich2010, Tian2010, Yuan:2011, Liu2013, Huang2013, Shi2014, Wang2015}. 
+This broad class of specific manipulation detectors includes the identification of pasted or inserted regions \cite{cm2, cm3, cm4, spl2, spl3}, resizing \cite{fernando2017}, re-compression \cite{PBPG2017-TIFS},  image enhancing \cite{shan2019robust}, inconsistencies in the geometry and illumination of the image due to possible manipulations \cite{geom1, geom2, phys1}, and various types of non-linear filtering (especially median) \cite{Bahrami2015, Cao2014, Cao2011, Fridrich2010, Tian2010, Yuan:2011, Liu2013, Huang2013, Shi2014, Wang2015, gao2019robust}. 
 
 In the context of non-linear filtering detection 
 very little attention was given to morphological filters \cite{haas1967morphologie} often used in image processing for artifacts removal and image enhancement \cite{British2012} \cite{Maragos2004}. The detection of this kind of filtering is of interest in the context of both image phylogeny and specific tampering identification in legal scenarios, but could be very useful also to detect possible counter forensic attacks based on morphology, where such filters, very powerful in the removal of local noise, could be exploited at the end of the image manipulation process to cover other types of traces. 
@@ -75,26 +75,25 @@ very little attention was given to morphological filters \cite{haas1967morpholog
 In this paper we present a non trivial extension of a recent work \cite{de2017detecting} which deterministically detect erosion and dilation of binary images. The proposed extension works on grayscale images by detecting morphological filters application in an accurate way both in uncompressed and compressed images. The method also allows for erosion versus dilation discrimination and in many cases also for the adopted structural element (or simply called the ``kernel") identification. 
 Robustness against JPEG compression, noise addition and confusion with other types of filters is also tested on various datasets. 
 
-The rest of the paper is organized as follows: Section II provides the theoretical background for the problem formulation; Section III describes the proposed methodology for morphological filtering detection in uncompressed and compressed images; Section IV describes the experimental setup, datasets and scenarios adopted for testing and validation; Section V details the experimental analysis and  obtained results; finally, Section VI reports some concluding remarks.   
+The rest of the paper is organized as follows: Section~\ref{sec:theory} provides the theoretical background for the problem formulation; Section~\ref{sec:method} describes the proposed methodology for morphological filtering detection in uncompressed and compressed images; Section~\ref{sec:exp_setup} describes the experimental setup, datasets and scenarios adopted for testing and validation; Section~\ref{sec:experiments} details the experimental analysis and obtained results; finally, Section~\ref{sec:conclusions} reports some concluding remarks.   
 
 \section{Theoretical formulation}
-\label{sec:method}
+\label{sec:theory}
 In this section we introduce the mathematical formulation of the problem, and we derive the proposed methodology for morphological filter detection. 
 
 \subsection{Mathematical Formulation and Properties}
 Mathematical morphology defines a set of nonlinear filters commonly employed in digital image processing to modify the local structural content of images. All the morphological filters are derived from the various combinations of two basic operators, \textit{erosion} and \textit{dilation}, and a kernel mask (or shortly, a kernel) called \textit{structuring element}, characterized by a shape, a size, and a reference point. The shape and the size of the kernel are responsible for the behavior of the operator on the image, while the reference point just defines the shift of the filtered image with respect to the original. The invention of such mathematical tools dates back to 1964 \cite{haas1967morphologie}, and was meant to the filtering of binary images for mineral studies. Later studies \cite{nakagawa1977note} led to the generalization of the theory to the case of grayscale images.
 
-According to this theory, given a grayscale image $f(x,y)$ and a binary structuring element $K$, the two fundamental morphological operators, erosion and dilation, are respectivelly defined as:
+According to this theory, given a grayscale image $f(x,y)$ and a binary structuring element $B$, the two fundamental morphological operators, erosion and dilation, are respectivelly defined as:
 
 \begin{equation} \label{eq:erode}
-f \ominus K = min_K(f(x,y) \cap K_{xy})
+f \ominus B = min_B(f(x,y) \cap B_{xy})
 \end{equation}
 \begin{equation} \label{eq:dilate}
-f \oplus K = max_K(f(x,y) \cap K_{xy})
+f \oplus B = max_B(f(x,y) \cap B_{xy})
 \end{equation}
 
-
-where $K_{xy}$ represents the structuring element (kernel) $K$ with the reference point centered at the coordinates $x,y$ of the image plane, while the intersection operations returns the subset of the image pixels overlapped with the 1s of $K$. In this respect, the basic grayscale operators are particular cases of rank-order filters, and behave very similarly to min-max and median operators, except for the shape of the mask.
+where $B_{xy}$ represents the structuring element (kernel) $B$ with the reference point centered at the coordinates $x,y$ of the image plane, while the intersection operations returns the subset of the image pixels overlapped with the 1s of $B$. In this respect, the basic grayscale operators are particular cases of rank-order filters, and behave very similarly to min-max and median operators, except for the shape of the mask.
 
 \begin{figure}[h!]
 	\centering
@@ -136,49 +135,51 @@ Also the mathematical properties of morphological grayscale operators match the 
 	\end{equation} 
 \end{enumerate}
 
-Additionally, it is easy to see that the two theorems introduced in \cite{de2017detecting} remain valid, since their demonstrations do not depend on Eq. \ref{eq:erode} and Eq. \ref{eq:dilate}, but only on the properties (i)-(iv), which hold also for greyscale images.
+Additionally, it is easy to see that the two theorems introduced in \cite{de2017detecting} remain valid, since their demonstrations do not depend on Eq. \ref{eq:erode} and Eq. \ref{eq:dilate}, but only on the properties (i)-(iv), which hold also for \textbf{grayscale images}.
 
 \begin{theorem}
 	\label{theorem_1}
-	Let $C = A\ominus B$, then $C\bullet B = C$. Respectively, if $C = A \oplus B$, then $C\circ B = C$.
+	Let $I' = I \ominus K$, then $I'\bullet K = I'$. Respectively, if $I' = I \oplus K$, then $I'\circ K = I'$.
 \end{theorem}
 
 \begin{theorem}
 	\label{theorem_2}
-	Let $C = A\ominus B$, then $\forall D$ such that $\exists E | D\oplus E = B$, we have that $C\bullet D = C$. Respectively, if $C = A \oplus B$, then $C \circ D = C$.
+	Let $I' = I \ominus K$, then $\forall M$ such that $\exists E | M \oplus E = K$, we have that $I' \bullet M = I'$. Respectively, if $I' = A \oplus K$, then $I' \circ M = I'$.
 \end{theorem}
 
-Theorem \ref{theorem_1} can be equivalently formulated in terms of series of erosion and dilation operators, according to the definition of open and close operators. Theorem \ref{theorem_2} extends the equality of Theorem \ref{theorem_1} to any mask $D$ that can produce $B$ by dilation with an appropriate mask $E$.
+Theorem \ref{theorem_1} can be equivalently formulated in terms of series of erosion and dilation operators, according to the definition of open and close operators. Theorem \ref{theorem_2} extends the equality of Theorem \ref{theorem_1} to any kernel mask $M$ that can produce $F$ by dilation with an appropriate kernel $E$.
 
-As an immediate consequence of the above theorems, an image dilated (eroded) with a given structural element $B$, will remain unchanged after applying an open (close) operator with the same element. This provides a simple test to detect a filtered image: apply an open (close) operator with a mask $B$, if the image does not change, this means that it was previously dilated (eroded) with that mask, otherwise it was not. The detection consists then in subsequently checking with the above procedure a set of possible masks. In \cite{de2017detecting}, a set of common structural elements were proposed, characterized by some level of simmetry (see Figure \ref{fig:masks}).
+As an immediate consequence of the above theorems, an image dilated (eroded) with a given kernel $K$, will remain unchanged after applying an open (close) operator with the same element. This provides a simple test to detect a filtered image: apply an open (close) operator with a kernel $K$, if the image does not change, this means that it was previously dilated (eroded) with that kernel, otherwise it was not. The detection consists then in subsequently checking with the above procedure a set of possible masks. In \cite{de2017detecting}, a set of common kernels were proposed, characterized by some level of symmetry (see Figure \ref{fig:masks}).
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=0.7\linewidth]{masks.png}
-	\caption{Set of kernels used for simulations. In grey, each structural element's reference point}
+	\caption{Set of structuring elements (kernels) used for simulations. In grey, each structural element's reference point.}
 	\label{fig:masks}
 \end{figure}
 
 \section{Proposed approach}
+\label{sec:method}
+
 In this section we introduce the proposed detector, distinguishing two cases: the detection of morphological filtering on unattacked images, and the detection in the presence of attacks. We will see that the former is a trivial extension of the binary case but has very limited applicability, while the latter requires further attention.
 
 \subsection{Filter Detection on Unattacked Images}
 
-According to the theory stated in Section \ref{sec:method}, in the absence of attacks gray-scale morphological operators can be easily and deterministically detected by applying the schema proposed in \cite{de2017detecting} and reported in Figure \ref{fig:scheme}.
+According to the theory stated in Section \ref{sec:theory}, in the absence of attacks greyscale morphological operators can be easily and deterministically detected by applying the schema proposed in \cite{de2017detecting} and reported in Figure \ref{fig:scheme}.
 
 \begin{figure*}[!ht]
 	\centering
 	\includegraphics[width=\linewidth]{diagram1}
-	\caption{Proposed detection scheme for unattacked grayscale images}
+	\caption{Proposed detection scheme for unattacked grayscale images.}
 	\label{fig:scheme}
 \end{figure*}
 
-However, it is worth mentioning that this scenario is rarely verified in grayscale images, which are typically stored in compressed format after filtering. The compression (as well as most other image processing operations) significantly modifies the image, thus hindering the applicability of Theorem 1. As a result, the detector will never report a perfect match between the input eroded (dilated) image and the corresponding opened (closed) version, i.e., it will never output a positive detection.
+However, it is worth mentioning that this scenario is rarely verified in greyscale images, which are typically stored in compressed format after filtering. The compression (as well as most other image processing operations) significantly modifies the image, thus hindering the applicability of Theorem~\ref{theorem_1}. As a result, the detector will never report a perfect match between the input eroded (dilated) image and the corresponding opened (closed) version, i.e., it will never output a positive detection.
 
 In the next section we propose an extension of the above algorithm that is able to deal with such scenario. The new algorithm will exploit the traces left by the morphological filters even after post-processing, and will rely on a statistical analysis, thus loosing its deterministic nature. We will see however that it is sufficiently robust to many attacks, and in particular to the JPEG compression.
 
 \subsection{Filter Detection on Attacked Images}
-\label{sec:compr_img}
+\label{subsec:compr_img}
 \begin{figure*}[!ht]%
 	\centering
 	\includegraphics[width=\linewidth]{morphological_example}
@@ -188,7 +189,7 @@ In the next section we propose an extension of the above algorithm that is able 
 
 As mentioned in the previous section, any further processing of the filtered image will modify the pixel values, possibly re-introducing structures that were eliminated by the morphological operator. A further morphological filtering will then produce a non-null effect on the image, which will be revealed by the detector. It is therefore necessary to verify if some traces of the original filter survive the post-processing.
 
-Recalling that the grayscale morphology operates as a local min-max filter, we can expect that it will produce larger variations in the presence of high-contrast structures that match the structural element geometry. On the contrary, unless the post-processing is meant to be extremely visible, it will introduce small graylevel variations on the image. Consequently, although we will not have a null difference image at the detector output, we can expect that the local differences will be much smaller for a filtered image than for an original one. An experimental evidence of this fact is provided in Figure \ref{fig:hist_ero}. Here we plot the log-scale histograms of the absolute differences before and after the application of an open operator to a JPEG-compressed unfiltered image, and to the relevant JPEG-compressed dilated image. Both open and dilation operators have been applied using the kernel mask $35$ in Fig. \ref{fig:masks}, and the JPEG quality factor has been set to $QF=95$. It is possible to observe that the histogram referred to the dilated image decreases steeply, with significant bins only for low values of the difference, while the histogram referred to the unfiltered image shows a long tail with significant values also above 50. This means on one side that the compression does not affect the high-contrast structures present in the original image (which are then removed by the following open operator), and on the other side that it does not re-introduce in the filtered image any high-contrast structure sensitive to the filter itself.
+Recalling that the greyscale morphology operates as a local min-max filter, we can expect that it will produce larger variations in the presence of high-contrast structures that match the structural element geometry. On the contrary, unless the post-processing is meant to be extremely visible, it will introduce small gray level variations on the image. Consequently, although we will not have a null difference image at the detector output, we can expect that the local differences will be much smaller for a filtered image than for an original one. An experimental evidence of this fact is provided in Figure \ref{fig:hist_ero}. Here we plot the log-scale histograms of the absolute differences before and after the application of an open operator to a JPEG-compressed unfiltered image, and to the relevant JPEG-compressed dilated image. Both open and dilation operators have been applied using the kernel mask $35$ in Fig. \ref{fig:masks}, and the JPEG quality factor has been set to $QF=95$. It is possible to observe that the histogram referred to the dilated image decreases steeply, with significant bins only for low values of the difference, while the histogram referred to the unfiltered image shows a long tail with significant values also above 50. This means on one side that the compression does not affect the high-contrast structures present in the original image (which are then removed by the following open operator), and on the other side that it does not re-introduce in the filtered image any high-contrast structure sensitive to the filter itself.
 
 On this basis, we propose to modify the detection scheme as shown in Figure~\ref{fig:scheme_improved}.
 
@@ -201,7 +202,7 @@ On this basis, we propose to modify the detection scheme as shown in Figure~\ref
 	\label{fig:scheme_improved}
 \end{figure*}
 
-The core of the procedure still involves the application of grayscale opening/closing. In this case, however, we take into consideration the statistical properties of the differences between the input and output images, to see how such residual is distributed. Therefore, we calculate the histogram of the difference image and feed it into a statistical classifier to perform the decision. As far as the classifier is concerned, we adopted a properly trained SVM classifier. Details on the classifier are provided in the next section.
+The core of the procedure still involves the application of greyscale opening/closing. In this case, however, we take into consideration the statistical properties of the differences between the input and output images, to see how such residual is distributed. Therefore, we calculate the histogram of the difference image and feed it into a statistical classifier to perform the decision. As far as the classifier is concerned, we adopted a properly trained classifier. %Details on the classifier are provided in the next section.
 
 Finally, we should notice that not all the areas of an image are equally affected by a morphological filter. In particular, the filter has a negligible effect on flat areas, thus possibly jeopardizing the results of the detector. To avoid this problem we decided to limit the analysis to the image regions that contain significant textures or edges. To this purpose, we calculate the block-wise normalized local variance $\alpha$, and we restrict the computation of the histogram to the blocks with $\alpha > \alpha_{th}$, where $\alpha_{th}$ has been empirically set to 0.15. This task is performed by the first processing block in Fig. \ref{fig:scheme_improved}. 
 
@@ -209,7 +210,7 @@ Finally, we should notice that not all the areas of an image are equally affecte
 \section{Experimental setup}
 \label{sec:exp_setup}
 
-In order to assess the performance of the proposed detector, we tested it in various scenarios and we evaluated it in terms of accuracy. In this section we describe such scenarios and the relevant experiments. Furthermore, we introduce the datasets used for the testing, and we provide additional details about the SVM classifier used in the detector and the relevant training procedure.
+In order to assess the performance of the proposed detector, we tested it in various scenarios and we evaluated it in terms of accuracy. In this section we describe such scenarios and the relevant experiments. Furthermore, we introduce the datasets used for the testing, and we provide additional details the relevant training procedure.
 
 \subsection{Datasets}
 \label{subsec:datasets}
@@ -225,10 +226,10 @@ The three datasets were selected to diversify the range of resolutions in the ex
 
 \subsection{Testing scenarios}
 \label{subsec:test_scenarios}
-The proposed detector has been tested in various practical scenarios. It is to be pointed out that we did not consider the case of unattacked images, which is by definition deterministic, as previously discussed, and provides therefore 100\% accuracy.
+The proposed detector has been tested in various practical scenarios as follows:%. It is to be pointed out that we did not consider the case of unattacked images, which is by definition deterministic, as previously discussed, and provides therefore 100\% accuracy.
 
 \begin{itemize}
-\item Our first set of tests were performed in order to understand the impact of the parameters as well as to select a proper classifier. Based on the setups found on this set of tests, we kept the best setups (in term of performance) for the next tests.
+\item The first set of tests were performed in order to understand the impact of the parameters as well as to select a proper classifier. Based on the setups found on this set of tests, we kept the best setups (in term of performance) for the next tests.
 
 \item The second set of tests refers to the detection of morphological filtering on compressed images, using JPEG at various quality factors. In this case, we want to establish the accuracy of the detector in discriminating filtered vs. unfiltered images, in classifying the type of operator (erosion vs. dilation), and finally in determining the exact structuring element used for filtering. 
 
@@ -238,10 +239,11 @@ The proposed detector has been tested in various practical scenarios. It is to b
 	
 \end{itemize}
 
-It is worth noting that, due to the properties analysed in Sect. \ref{sec:method}, in the presence of a cascade of different basic operators (erosion and dilation), the detector will reveal the last operator applied. Accordingly, when processing an opened or a closed image, the detector will reveal the last dilation or erosion, respectively. Furthermore, in the presence of a cascade of the same basic operator, the detector will reveal a single erosion or dilation with the composed structuring element. Therefore, in the experimental section we will just consider erosion and dilation detection, even if the image may have been potentially processed with more complex combinations of filters.
+It is worth noting that, due to the properties analysed in Section~\ref{sec:theory}, in the presence of a cascade of different basic operators (erosion and dilation), the detector will reveal the last operator applied. Accordingly, when processing an opened or a closed image, the detector will reveal the last dilation or erosion, respectively. Furthermore, in the presence of a cascade of the same basic operator, the detector will reveal a single erosion or dilation with the composed structuring element. Therefore, in the experimental section we will just consider erosion and dilation detection, even if the image may have been potentially processed with more complex combinations of filters.
 
 
 \section{Experimental Results and Discussion}
+\label{sec:experiments}
 
 In this section, all experimental tests carried out are described. %In subsection IV-A, the selected datasets and the processing of their content are presented, together with results related to uncompressed data; while subsection IV-B is dedicated to the analysis of compressed data. 
 All  tests are performed using Python 3.6 and libSVM on a standard machine (Macbook Pro 2016 2,3GHz 4-kernel Intel Core i5, 8GB ram).
@@ -256,7 +258,7 @@ In order to understand the impact of the parameters as well as to select a prope
 	\caption{Parameters selection.}
 	\label{tab:sensibility}
 	\resizebox{\linewidth}{!}{
-		\begin{tabular}{p{2cm}|p{5cm}|p{5cm}|p{5cm}}
+		\begin{tabular}{p{3cm}|p{5cm}|p{4cm}|p{5cm}}
 			\hline\hline
 			\textbf{Parameter/ Classifier} & \textbf{Meaning} & \textbf{Range} &  \textbf{Empirical Value/Selection} \\
 			\hline
@@ -266,7 +268,7 @@ In order to understand the impact of the parameters as well as to select a prope
 			
 			$ s \in \{3 \times 3, 5 \times 5, ...\}$ & $ \alpha_{th} = 0.15$ and $s = 3 \times 3$.\\
 			\hline
-			$n$ & Number of bins of the analyzed histograms (and we limit to analyse 144 histograms)& $0 \le n \le 256$ & Even if for $n > 30$ we already achieve 90\% accuracy, we set $n$ at the highest value, i.e., considering all bins.\\
+			$n$ & Number of bins of the analyzed histograms.& $0 \le n \le 256$ & Even if for $n > 30$ we already achieve 90\% accuracy, we set $n$ at the highest value, i.e., considering all bins.\\
 			\hline
 			The classifiers & & SVM, KNN, Linear Regression, and others & SVM with RBF kernel and grid search provides the best performance. \\							
 			\hline\hline
@@ -282,9 +284,9 @@ The classifier receives in input the histogram of the differences between the in
 	\label{fig:hist_ero_80}%
 \end{figure}
 
-Accordingly, we decided to train a set of classifiers for varying JPEG quality factors, from 100 to 70. During the test phase, the most appropriate classifier is selected on the basis of the QF retrieved by the image EXIF.
+Accordingly, we decided to train a set of classifiers for varying JPEG quality factors, from 100 to 70. During the test phase, we tested with different classifiers: k-NN, decision trees, naive Bayes classifier, and SVM, and empirically decided to use SVM with the radial basis function (RBF) kernel. 
 
-Given the appropriate quality factor, the histograms of differences show a peculiar behavior only if the detector parameters match the input filter in both the operator (erosion or dilation) and the structural element, whereas such behavior is never found in all the other combinations. It is important to notice that the application of the detector to an unfiltered image or to an image filtered with a different combination of operator and/or structuring element produces similar results, i.e., only the matching detector responds to the filtered image. As an example, in Fig. \ref{fig:hist_dil_ero_same} we show the histograms deriving from the application of an erosion detector to an eroded and a dilated image, both with the same structuring element. It can be observed that the dilated image responds similarly to the uncompressed image in Fig. \ref{fig:hist_ero}. Analogously, in Fig. \ref{fig:hist_ero_ero_diff}, we compare the histograms deriving from the erosion detector applied to two eroded images, one with the same structuring element and the other with a different one. Also in this case, the image filtered with a different mask responds as unfiltered. Finally, in Fig. \ref{fig:hist_ero_ero_albero} we show the case of application of the erosion detector to two images filtered with structuring elements belonging to the same group (i.e., one can be obtained from the other by dilation). As expected from Theorem 2, the two histograms are almost overlapped, since both show the statistical properties of a filtered image.
+We also note that given the appropriate quality factor, the histograms of differences show a peculiar behavior only if the detector parameters match the input filter in both the operator (erosion or dilation) and the structural element (kernel), whereas such behavior is never found in all the other combinations. It is important to notice that the application of the detector to an unfiltered image or to an image filtered with a different combination of operator and/or kernel produces similar results, i.e., only the matching detector responds to the filtered image. As an example, in Fig. \ref{fig:hist_dil_ero_same} we show the histograms deriving from the application of an erosion detector to an eroded and a dilated image, both with the same kernel. It can be observed that the dilated image responds similarly to the uncompressed image in Fig. \ref{fig:hist_ero}. Analogously, in Fig. \ref{fig:hist_ero_ero_diff}, we compare the histograms deriving from the erosion detector applied to two eroded images, one with the same kernel and the other with a different one. Also in this case, the image filtered with a different kernel responds as unfiltered. Finally, in Fig. \ref{fig:hist_ero_ero_albero} we show the case of application of the erosion detector to two images filtered with kernels belonging to the same group (i.e., one can be obtained from the other by dilation). As expected from Theorem~\ref{theorem_2}, the two histograms are almost overlapped, since both show the statistical properties of a filtered image.
 
 \begin{figure}[!ht]
 	\centering
@@ -307,43 +309,35 @@ Given the appropriate quality factor, the histograms of differences show a pecul
 	\label{fig:hist_ero_ero_albero}
 \end{figure}
 
-Given the substantial equivalence of unfiltered and differently filtered images from the point of view of the detector, and for the purpose of balancing the cardinality of the classes, we decided to limit the number of histograms to be fed into the SVM training process to 144, as follows:
-
-\begin{itemize}
-	\item 72 $(36 \times 2)$ unfiltered compressed images fed to both close and open operators for every structuring element (labelled as \textit{uncompressed})
-	\item 36 eroded compressed images fed to the close operator with the matching structuring element (labelled as \textit{eroded})
-	\item 36 dilated compressed images fed to the open operator with the matching structuring element (labelled as \textit{dilated}).
-\end{itemize}
-
-
-\subsection{Experimental Results on Uncompressed Images}
-
-Since the detection strategy in this case is the very same proposed in \cite{de2017detecting}, we followed their general approach for deriving results relative to uncompressed gray-scale images. Each image has been processed with erosion and dilation operators considering all the 36 structural elements, obtaining the following number of filtered images:
-
-\begin{itemize}
-	\item UCID $\rightarrow 1,338\times 36 \times 2 = 96,336$
-	\item DRESDEN $\rightarrow 1,189\times 36\times 2 = 85,608$
-	\item RAISE-1k $\rightarrow 1,000\times 36\times 2 = 72,000$
-\end{itemize}
-
-All images, along with their unprocessed versions, were fed to both dilation and erosion detectors. For each image, all 36 structural elements are tested, returning either the largest kernel with perfect match between input and output or no detection if all kernels fail. All datasets result in 100\% accuracy in discriminating the presence and the type of morphological filter, as reported in Table \ref{tab1:det_acc}.
-
-\begin{table}[!ht]
-	\centering
-	\caption{Detection accuracy for all three datasets.}
-	\label{tab1:det_acc}
-	\begin{tabular}{|l|l|l}
-		\cline{2-3}
-		\multicolumn{1}{c|}{}		     & \multicolumn{2}{c|}{\textbf{DETECTOR}}	           				    \\ \hline
-		\multicolumn{1}{|c||}{\textbf{FILTER}}    & \multicolumn{1}{c|}{erosion} & \multicolumn{1}{c|}{dilation} \\ \hline
-		\multicolumn{1}{|c||}{no filter} & \multicolumn{1}{c|}{0\%} 	& \multicolumn{1}{c|}{0\%}      \\ \hline
-		\multicolumn{1}{|c||}{erosion}   & \multicolumn{1}{c|}{100\%}   & \multicolumn{1}{c|}{0\%}      \\ \hline
-		\multicolumn{1}{|c||}{dilation}  & \multicolumn{1}{c|}{0\%}     & \multicolumn{1}{c|}{100\%}    \\ \hline
-	\end{tabular}
-\end{table}
+For some other choices, for example block size or $\alpha_{th}$, all values are empirically selected and are reported in Table~\ref{tab:sensibility}. 
 
 \subsection{Experimental Results on Compressed Images}
 \label{sec:compr_res}
+
+\subsubsection{Experimental Results on Uncompressed Images}
+
+Before testing on compressed images, we ran a test on uncompressed images in order to confirm the deterministic nature of the proposed approach on unpressed images. Since the detection strategy in this case is the very same proposed in \cite{de2017detecting}, we followed their general approach for deriving results relative to uncompressed greyscale images. Each image has been processed with erosion and dilation operators considering all the 36 kernels.
+
+All images, along with their unprocessed versions, were fed to both dilation and erosion detectors. For each image, all 36 kernels are tested, returning either the largest kernel with perfect match between input and output or no detection if all kernels fail. All three datasets result in 100\% accuracy in discriminating the presence and the type of morphological filter, as reported in Table \ref{tab1:det_acc}.
+
+\begin{table}[!ht]
+	\centering
+	\caption{Detection accuracy for all three datasets for uncompressed images.}
+	\label{tab1:det_acc}
+	\begin{tabular}{|l|l|l}
+		\hline\hline%\cline{2-3}
+		\multicolumn{1}{c|}{}		     & \multicolumn{2}{c}{\textbf{Detector}}	           				    \\ 
+		\cline{2-3}
+		\multicolumn{1}{c|}{\textbf{Filter}}    & \multicolumn{1}{c|}{erosion} & \multicolumn{1}{c}{dilation} \\ 
+		\hline%\hline
+		\multicolumn{1}{c|}{no filter} & \multicolumn{1}{c|}{0\%} 	& \multicolumn{1}{c}{0\%}      \\ \hline
+		\multicolumn{1}{c|}{erosion}   & \multicolumn{1}{c|}{100\%}   & \multicolumn{1}{c}{0\%}      \\ \hline
+		\multicolumn{1}{c|}{dilation}  & \multicolumn{1}{c|}{0\%}     & \multicolumn{1}{c}{100\%}    \\ 
+		\hline\hline
+	\end{tabular}
+\end{table}
+
+\subsubsection{Experimental Results on Compressed Images}
 
 %\subsubsection{Training Phase}
 
@@ -422,6 +416,7 @@ Training on 800 RAISE images and testing on the rest 200 images, the false posit
 
 
 \section{Conclusions}
+\label{sec:conclusions}
 In this work we propose an effective detection strategy to assess the use of morphological filtering in a gray-scale context. We deal with uncompressed images proposing a deterministic approach, reflection of the binary domain scenario, based on mathematical properties enjoyed by basic morphological operators. We additionally propose a modified pipeline to detect morphological processing in compressed images, exploiting difference histogram information as feature for Support Vector Machine classification. Finally, we present a testing phase in which both uncompressed and compressed scenarios are taken into consideration. Results show the effectiveness of our proposed approach in both cases.  
  
 \section*{Acknowledgment}
