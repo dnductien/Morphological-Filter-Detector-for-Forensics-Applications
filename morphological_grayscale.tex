@@ -342,7 +342,7 @@ All images, along with their unprocessed versions, were fed to both dilation and
 In order to test the proposed approach on JPEG compressed images, we considered a set of seven different quality factors with $QF \in \{100,95,90,85,80,75,70\}$, with 14 $(7\times 2)$ binary classifiers, respectively,
 using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$. Shown in Table~\ref{table:detection_results} are the average results (over all kernels) of the proposed method on three datasets at the seven quality factors. The detailed results for all kernels, both two morphological operators over all three datasets are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation} in \ref{app:detailed_compress}. According to the results, we can observe that the proposed method can provide high detection performance on low compression level (i.e., high factor quality - $QF \ge 80$) images with the accurac over $76.8\%$ on all datasets. At higher compression level, the performance reduced significantly. The resolution also plays an important role as can be seen from the results that UCID has lower performance than Dresden and Raise. It is also interesting to notice that there is little difference between Dresden and Raise, which is believed that because of the resolution of the images. To have a deeper understanding of the impact of the image resolution, we ran another test on different image resolution, and the results confirmed our observation in the first set of tests that the proposed method can give good performance (over 90\%) for the resolution from about $1,000 \times 1,000$. The detailed results are shown in Table~\ref{table:resolutionerosion} in \ref{app:detailed_compress}.
 
-\begin{table*}
+\begin{table}[t!]
 	\centering
 	\caption{Morphological filtering detection results on all three datasets  using SVM with RBF kernel, 10-fold cross validation. The numbers are in percentage and each of them is the average performance (for distinguishing between the non-filtered versus filtered images) over all 36 kernels. Details results are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation}.}
 	\label{table:detection_results}
@@ -361,7 +361,7 @@ using a Gaussian kernel with grid-search for the parameters. We apply k-Fold val
 			& Dilation & 100 & 97.98 & 97.43 & 93.72 & 91.02 & 80.49 & 78.53 \\
 			\hline\hline
 	\end{tabular}}
-\end{table*}
+\end{table}
 
 The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect using different classifiers. Shown in Table~\ref{table:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small size kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable as it is the results from Theorem~\ref{theorem_2}.
 
@@ -379,10 +379,7 @@ The third set of tests concerns noise attacks. In the first test, each image is 
 
 We applied a further test on understanding if the proposed method can detect the morphological filter under an attack and followed by a compression. In this test, each image after applied the morphological filter is contaminated with a noise (only three first attacks were applied), and then is compressed under different quality factors.  The results in Table~\ref{table:attacks2} shown that the proposed method can still detect the morphological filter, however, its performance is getting worst as the compression quality factor increasing.  
 
-
-
-
-\begin{table}[h!]
+\begin{table}[t!]
 	\centering
 	\caption{Results on erosion detection on Raise under different attacks, using SVM with RBF kernel, 10-fold cross validation.}
 	\label{table:attacks2}
@@ -404,9 +401,9 @@ We applied a further test on understanding if the proposed method can detect the
 \subsection{Morphological Filters versus Other Filters }
 \label{subsec:results_different_filters}
 
-Finally, we want to determine the capability of our approach in distinguishing between morphological filters and other filters that produce similar results. In particular, we considered three filters: Pepper \& Salt, Gaussian lowpass and median filtering. In all cases, the filtered images are compressed and passed to the detector to reveal possible false alarms. 
+Finally, we want to determine the capability of our approach in distinguishing between morphological filters from other filters that produce similar results. In particular, we considered three filters: pepper \& salt, Gaussian lowpass and median filtering. In all cases, the filtered images are uncompressed and passed to the detector to reveal possible false alarms. 
 
-Training on 800 RAISE images and testing on the rest 200 images, the false positives (for eroded vs. filtered by pepper \& salt, Gaussian, or median filters) are below 7.5\% (i.e., less than 15 images wrongly detected). In particular, the average number of false positive images (over 200 images) for pepper \& salt, Gaussian $3 \times 3$, Gaussian $5 \times 5$, median filter $3 \times 3$, and median filter $5 \times 5$ are 3.51, 5.72, 5.28, 14.11, and 13.17, respectively. The detailed results can be found in Table~\ref{table:fp_filters}. 
+In this experiment, we trained 800 images from RAISE for eroded vs. non-filtered. The images are uncompressed and are in full resolution. We then applied the trained classifiers to the rest of the 200 images, filtered by the three mentioned filters. The false positives obtained were below 7.5\% (i.e., less than 15 images were detected as eroded after filtered). In particular, the average number of false positive images (over 200 images) for pepper \& salt, Gaussian $3 \times 3$, Gaussian $5 \times 5$, median filter $3 \times 3$, and median filter $5 \times 5$ are 3.51, 5.72, 5.28, 14.11, and 13.17, respectively. The detailed results can be found in Table~\ref{table:fp_filters}. This confirmed that the proposed method can distinguish between morphological from other filters. This is, however, very hard in the case that the filters are median-based since in the case of greyscale, morphological filters and median filters are very similar.
 
 
 \section{Conclusions}
