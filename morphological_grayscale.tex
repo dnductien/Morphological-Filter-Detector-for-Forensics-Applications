@@ -337,7 +337,14 @@ All images, along with their unprocessed versions, were fed to both dilation and
 \subsubsection{Experimental Results on JPEG Compressed Images}
 %
 In order to test the approach on JPEG compressed images, we considered a set of seven different quality factors with $QF \in \{100,95,90,85,80,75,70\}$, with 14 $(7\times 2)$ binary classifiers, respectively,
-using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$. Shown in Table~\ref{table:detection_results} are the average results (over all kernels) of the proposed method on three datasets at the seven quality factors. The detailed results for all kernels, both two morphological operators over all three datasets are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation} in \ref{app:detailed_compress}. According to the results, we can observe that the proposed method can provide high detection performance on low compression level (i.e., high factor quality with $QF \ge 80$) with accuracy equal or above $76.8\%$ on all datasets. At higher compression level, the performance reduces significantly. The resolution also plays an important role as it can be grasped from the results. Indeed, UCID has lower performance with respect to Dresden and Raise. It is also interesting to notice that there is little difference between Dresden and Raise. To have a deeper understanding of the impact of the image resolution, we ran another test on different image resolutions: the proposed method achieves good performance (over 90\%) for resolution from about $1,000 \times 1,000$. The detailed results are shown in Table~\ref{table:resolutionerosion} in \ref{app:detailed_compress}. NEW PLOT HERE?
+using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$. Shown in Table~\ref{table:detection_results} are the average results (over all kernels) of the proposed method on three datasets at the seven quality factors. The detailed results for all kernels, both two morphological operators over all three datasets are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation} in \ref{app:detailed_compress}. According to the results, we can observe that the proposed method can provide high detection performance on low compression level (i.e., high factor quality with $QF \ge 80$) with accuracy equal or above $76.8\%$ on all datasets. At higher compression level, the performance reduces significantly. The resolution also plays an important role as it can be grasped from the results. Indeed, UCID has lower performance with respect to Dresden and Raise. It is also interesting to notice that there is little difference between Dresden and Raise. To have a deeper understanding of the impact of the image resolution, we ran another test on different image resolutions: the proposed method achieves good performance (over 90\%) for resolution from about $1,000 \times 1,000$. Shown in Figure~\ref{fig:resolutions} are results over 36 kernels on erosion detection forr RAISE-1k images.%Table~\ref{table:resolutionerosion} in \ref{app:detailed_compress}. 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{resolutions.pdf}
+	\caption{Results (computer as percentage) on erosion detection under different resolutions. Dataset: Raise, QF = 90. All 36 kernels are computed and their results are shown in the error bars.}
+	\label{fig:resolutions}
+\end{figure}
 
 \begin{table}[t!]
 	\centering
@@ -748,6 +755,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 	\end{minipage}
 \end{table*}
 
+\begin{comment}
 \newpage
 \begin{longtable}{c|cccccc}
 	\caption{Results on erosion detection under different resolutions. Dataset: Raise, QF = 90. Results are in percentage.}
@@ -798,7 +806,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 	\hline\hline	
 \end{longtable}
 
-\begin{comment}
+
 \begin{longtable}{C{1.5cm}|C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}}
 	\caption{Results on dilation detection under different attacks. Dataset: Raise, full resolution, QF = 100, using SVM with RBF kernel, 10-fold cross validation.}
 	\label{table:attacks1}\\
