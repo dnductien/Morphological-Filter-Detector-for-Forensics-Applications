@@ -144,10 +144,10 @@ Additionally, it is easy to see that the two theorems introduced in \cite{de2017
 
 \begin{theorem}
 	\label{theorem_2}
-	Let $I' = I \ominus K$, then $\forall M$ such that $\exists E | M \oplus E = K$, we have that $I' \bullet M = I'$. Respectively, if $I' = A \oplus K$, then $I' \circ M = I'$.
+	Let $I' = I \ominus K$, then $\forall M$ such that $\exists E | M \oplus E = K$, we have that $I' \bullet M = I'$. Respectively, if $I' = I \oplus K$, then $I' \circ M = I'$.
 \end{theorem}
 
-Theorem \ref{theorem_1} can be equivalently formulated in terms of series of erosion and dilation operators, according to the definition of open and close operators. Theorem \ref{theorem_2} extends the equality of Theorem \ref{theorem_1} to any kernel mask $M$ that can produce $F$ by dilation with an appropriate kernel $E$.
+Theorem \ref{theorem_1} can be equivalently formulated in terms of series of erosion and dilation operators, according to the definition of open and close operators. Theorem \ref{theorem_2} extends the equality of Theorem \ref{theorem_1} to any kernel mask $M$ that can produce $K$ by dilation with an appropriate kernel $E$.
 
 As an immediate consequence of the above theorems, an image dilated (eroded) with a given kernel $K$, will remain unchanged after applying an open (close) operator with the same element. This provides a simple test to detect a filtered image: apply an open (close) operator with a kernel $K$, if the image does not change, this means that it was previously dilated (eroded) with that kernel, otherwise it was not. The detection consists then in subsequently checking with the above procedure a set of possible masks. In \cite{de2017detecting}, a set of common kernels were proposed, characterized by some level of symmetry (see Figure \ref{fig:masks}).
 
@@ -415,6 +415,8 @@ In this work we propose an effective detection strategy to assess the use of mor
 
 \newpage
 \appendix
+\setcounter{table}{0}
+
 \section{Detailed Results}
 \label{app:detailed_compress}
 	\begin{longtable}{c|ccccccc}
