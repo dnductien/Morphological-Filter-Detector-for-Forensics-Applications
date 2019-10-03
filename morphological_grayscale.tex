@@ -372,7 +372,14 @@ The second test in this set is to analyse the impact of different kernels. We ap
 \subsection{Detector Robustness Analysis}
 \label{subsec:result_attacks}
 
-The third set of tests concerns analysis of robustness against noise addition. In the first test, morphological filtering is applied to each image and then this is contaminated with a noise. Five different attacks - pepper \& salt noise, Gaussian filtering, median filtering, scaling at 1.1x and scaling at 0.9x - were applied and average results (on all kernels) for dilation detection on RAISE1k are correspondingly: 97.92\%, 81.21\%, 87.94\%, 67.44\%, and 67.81\%. The detailed results are shown in Table~\ref{table:attacks1} in \ref{app:detailed_compress}. INSERT NEW PLOT HERE? According to the results, we can claim that the proposed method is robust against noise addition but not against processing involving interpolation (e.g., resizing). 
+The third set of tests concerns analysis of robustness against noise addition. In the first test, morphological filtering is applied to each image and then this is contaminated with a noise. Five different attacks - pepper \& salt noise, Gaussian filtering, median filtering, scaling at 1.1x and scaling at 0.9x - were applied and average results (on all kernels) for dilation detection on RAISE1k are correspondingly: 97.92\%, 81.21\%, 87.94\%, 67.44\%, and 67.81\% (the results are summarized in Figure~\ref{fig:attacks_1}. According to the results, we can claim that the proposed method is robust against noise addition but not against processing involving interpolation (e.g., resizing). 
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.7\linewidth]{attacks_1.pdf}
+	\caption{Results (computer as percentage) on dilation detection under different attacks. Dataset: RAISE-1k, full resolution, QF = 100, using SVM with RBF kernel, 10-fold cross validation. All 36 kernels are computed and the results are shown in the error bars.}
+	\label{fig:attacks_1}
+\end{figure}
 
 We applied a further test to understand if the proposed method can still detect the morphological filter after two level of processing where the second one is a compression. Thus, each image after a morphological filter is first contaminated with a noise, and then is compressed under different quality factors.  The results in Table~\ref{table:attacks2} show that the proposed method can still detect the morphological filter, however, its performance is getting worst as the compression level increases.  
 
@@ -404,7 +411,7 @@ This confirms that the proposed method can distinguish between morphological fil
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.5\linewidth]{different_filters.pdf}
+	\includegraphics[width=0.7\linewidth]{different_filters.pdf}
 	\caption{False Positive (computed as percentage) on 200 images from RAISE on erosion detection over all 36 filters. Images are in raw format, full resolution. The classifiers were trained on 800 images (eroded vs. non-filtered) and tested on the rest 200 images (filtered with pepper \& salt, Gaussian and median).}
 	\label{fig:different_filters}
 \end{figure}
@@ -791,6 +798,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 	\hline\hline	
 \end{longtable}
 
+\begin{comment}
 \begin{longtable}{C{1.5cm}|C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}}
 	\caption{Results on dilation detection under different attacks. Dataset: Raise, full resolution, QF = 100, using SVM with RBF kernel, 10-fold cross validation.}
 	\label{table:attacks1}\\
@@ -839,7 +847,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 	\hline\hline	
 \end{longtable}
 
-\begin{comment}
+
 \begin{longtable}{C{2cm}|C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}C{1.5cm}}
 	\caption{False Positive on 200 images from RAISE on erosion Detection. Images are in raw format, full resolution. The classifiers were trained on 800 images (eroded vs. non-filtered) and tested on the rest 200 images (filtered with pepper \& salt, Gaussian and median).}
 	\label{table:fp_filters}\\
