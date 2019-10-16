@@ -67,7 +67,7 @@ In the last decade, researchers and practitioners in multimedia forensics have b
 A recent trend tries to define universal detectors able to reveal manipulations independently from the type of processing applied, which could leverage media authentication in applications like journalism or social media analysis \cite{noiseprint}. 
 On the other hand, many methods have been proposed to detect different types of forgeries, which is very relevant for diverse applications, in particular digital investigations - given that images, audio tracks and video sequences now play a crucial role in modern investigations where they often represent digital evidences to the court \cite{forlab} - and multimedia data phylogeny aiming at recovering and tracing back the life-cycle of an image or a video \cite{Bestagini2016, Dias2012, Oliveira2016, Costa2014}.
 
-This broad class of specific manipulation detectors includes the identification of pasted or inserted regions \cite{cm2, cm3, cm4, spl2, spl3}, resizing \cite{fernando2017}, re-compression \cite{PBPG2017-TIFS},  image enhancing \cite{shan2019robust}, inconsistencies in the geometry and illumination of the image due to possible manipulations \cite{geom1, geom2, phys1}, and various types of non-linear filtering (especially median) \cite{Bahrami2015, Cao2014, Cao2011, Fridrich2010, Tian2010, Yuan:2011, Liu2013, Huang2013, Shi2014, Wang2015, gao2019robust}. 
+This broad class of specific manipulation detectors includes the identification of pasted or inserted regions \cite{cm2, cm3, cm4, spl2, spl3}, resizing \cite{fernando2017, PB-TIFS-2019}, re-compression \cite{PBPG2017-TIFS},  image enhancing \cite{shan2019robust}, inconsistencies in the geometry and illumination of the image due to possible manipulations \cite{geom1, geom2, phys1}, and various types of non-linear filtering (especially median) \cite{Bahrami2015, Cao2014, Cao2011, Fridrich2010, Tian2010, Yuan:2011, Liu2013, Huang2013, Shi2014, Wang2015, Pasquini2016-TIFS, gao2019robust}. 
 
 In the context of non-linear filtering detection 
 very little attention was given to morphological filters \cite{haas1967morphologie} often used in image processing for artifacts removal and image enhancement \cite{British2012} \cite{Maragos2004}. The detection of this kind of filtering is of interest in the context of both image phylogeny and specific tampering identification in legal scenarios, but could be very useful also to detect possible counter forensic attacks based on morphology, where such filters, very powerful in the removal of local noise, could be exploited at the end of the image manipulation process to cover other types of traces. 
@@ -285,21 +285,21 @@ The classifier receives in input the histogram of the differences between the in
 \begin{figure}[t!]
 	\centering
 	\includegraphics[scale=0.55]{hist_dil_ero_same.eps}
-	\caption{Histograms resulting from dilated and eroded images produced with the same structuring element, after compression at QF=95 and erosion detection.}
+	\caption{Histograms resulting from dilated and eroded images produced with the same structuring element, after compression at QF=95 and erosion detection. \textbf{Figure 9: since you decided to go for K instead of B maybe is better to cite K and K*?}}
 	\label{fig:hist_dil_ero_same}
 \end{figure}
 
 \begin{figure}[t!]
 	\centering
 	\includegraphics[scale=0.55]{hist_ero_ero_diff.eps}
-	\caption{Histograms resulting from eroded images produced with unrelated structuring elements, after compression at QF=95 and erosion detection.}
+	\caption{Histograms resulting from eroded images produced with unrelated structuring elements, after compression at QF=95 and erosion detection.\textbf{Figure 9: since you decided to go for K instead of B maybe is better to cite K and K*?}}
 	\label{fig:hist_ero_ero_diff}
 \end{figure}
 
 \begin{figure}[t!]
 	\centering
 	\includegraphics[scale=0.55]{hist_ero_ero_albero.eps}
-	\caption{Histograms resulting from eroded images produced with structuring element $B$ and its dilated version $B^*$, after compression at QF=95 and erosion detection.}
+	\caption{Histograms resulting from eroded images produced with structuring element $B$ and its dilated version $B^*$, after compression at QF=95 and erosion detection.\textbf{Figure 9: since you decided to go for K instead of B maybe is better to cite K and K*?}}
 	\label{fig:hist_ero_ero_albero}
 \end{figure}
 
@@ -342,9 +342,16 @@ using a Gaussian kernel with grid-search for the parameters. We apply k-Fold val
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{resolutions.pdf}
-	\caption{Results (computer as percentage) on erosion detection under different resolutions. Dataset: Raise, QF = 90. All 36 kernels are computed and their results are shown in the error bars.}
+	\caption{Results (computed as percentage) on erosion detection under different resolutions. Dataset: Raise, QF = 90. All 36 kernels are computed and their results are shown in the error bars.}
 	\label{fig:resolutions}
 \end{figure}
+
+\begin{sidewaystable}[]
+	\centering
+	\caption{Confusion matrix on erosion detection for multiple kernels. Dataset: Raise, QF = 90, full resolution. Values are normalized and are in percentage.}
+	\label{table:confusion}
+	\includegraphics[width=\linewidth]{confusion}
+\end{sidewaystable}
 
 \begin{table}[t!]
 	\centering
@@ -367,24 +374,17 @@ using a Gaussian kernel with grid-search for the parameters. We apply k-Fold val
 	\end{tabular}}
 \end{table}
 
-The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect them using different classifiers. Shown in Table~\ref{table:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small size kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable as a consequence of Theorem~\ref{theorem_2}.
-
-\begin{sidewaystable}[!htbp]
-	\centering
-	\caption{Confusion matrix on erosion detection for multiple kernels. Dataset: Raise, QF = 90, full resolution. Values are normalized and are in percentage.}
-	\label{table:confusion}
-	\includegraphics[width=\linewidth]{confusion}
-\end{sidewaystable}
-
 \subsection{Detector Robustness Analysis}
 \label{subsec:result_attacks}
+
+The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect them using different classifiers. Shown in Table~\ref{table:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small size kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable as a consequence of Theorem~\ref{theorem_2}.
 
 The third set of tests concerns analysis of robustness against noise addition. In the first test, morphological filtering is applied to each image and then this is contaminated with a noise. Five different attacks - pepper \& salt noise, Gaussian filtering, median filtering, scaling at 1.1x and scaling at 0.9x - were applied and average results (on all kernels) for dilation detection on RAISE1k are correspondingly: 97.92\%, 81.21\%, 87.94\%, 67.44\%, and 67.81\% (the results are summarized in Figure~\ref{fig:attacks_1}. According to the results, we can claim that the proposed method is robust against noise addition but not against processing involving interpolation (e.g., resizing). 
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{attacks_1.pdf}
-	\caption{Results (computer as percentage) on dilation detection under different attacks. Dataset: RAISE-1k, full resolution, QF = 100, using SVM with RBF kernel, 10-fold cross validation. All 36 kernels are computed and the results are shown in the error bars.}
+	\caption{Results (computed as percentage) on dilation detection under different attacks. Dataset: RAISE-1k, full resolution, QF = 100, using SVM with RBF kernel, 10-fold cross validation. All 36 kernels are computed and the results are shown in the error bars.}
 	\label{fig:attacks_1}
 \end{figure}
 
@@ -419,7 +419,7 @@ This confirms that the proposed method can distinguish between morphological fil
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.7\linewidth]{different_filters.pdf}
-	\caption{False Positive (computed as percentage) on 200 images from RAISE on erosion detection over all 36 filters. Images are in raw format, full resolution. The classifiers were trained on 800 images (eroded vs. non-filtered) and tested on the rest 200 images (filtered with pepper \& salt, Gaussian and median).}
+	\caption{False Positive (computed as percentage) on 200 images from RAISE on erosion detection over all 36 filters. Images are in raw format, full resolution. The classifiers were trained on 800 images (eroded vs. non-filtered) and tested on the rest 200 images (filtered with pepper \& salt, Gaussian and median).\textbf{Can we scale it 0-100 as previous one so it is evident we do not have huge errors?}}
 	\label{fig:different_filters}
 \end{figure}
 
