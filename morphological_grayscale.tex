@@ -89,20 +89,22 @@ According to this theory, given a grayscale image $f(x,y)$ and a binary structur
 \begin{equation} \label{eq:erode}
 f \ominus B = min_B(f(x,y) \cap B_{xy})
 \end{equation}
+\vspace{-0.5cm}
 \begin{equation} \label{eq:dilate}
 f \oplus B = max_B(f(x,y) \cap B_{xy})
 \end{equation}
 
-where $B_{xy}$ represents the structuring element (kernel) $B$ with the reference point centered at the coordinates $x,y$ of the image plane, while the intersection operations returns the subset of the image pixels overlapped with the 1s of $B$. In this respect, the basic grayscale operators are particular cases of rank-order filters, and behave very similarly to min-max and median operators, except for the shape of the mask.
+where $B_{xy}$ represents the structuring element (kernel) $B$ with the reference point centered at the coordinates $x,y$ of the image plane, while the intersection operations returns the subset of the image pixels overlapped with the 1s of $B$. In this respect, the basic grayscale operators are particular cases of rank-order filters, and behave very similarly to min-max (see examples in Figure~\ref{fig:grayscale_ex}) and median operators, except for the shape of the mask. 
 
-\begin{figure}[h!]
+\begin{figure}[t!]
 	\centering
 	\begin{tabular}{cc}
 		\centering
-		\includegraphics[scale=1.5]{original.eps} & \includegraphics[scale=0.15]{mask.png} \\
-		\includegraphics[scale=1.5]{eroded.eps} &  \includegraphics[scale=1.5]{dilated.eps} \\
+		\includegraphics[scale=1.2]{original.eps} & \includegraphics[scale=0.12]{mask.png} \\
+		\includegraphics[scale=1.2]{eroded.eps} &  \includegraphics[scale=1.2]{dilated.eps} \\
 	\end{tabular}
-	\caption{Example of gray-scale erosion (bottom left) and dilation (bottom right) of an image detail (top left), using a cross-shaped structuring element (top right). The resulting patches show the effect of min and max operations: erosion produces a darker version of the original image eliminating small cross-shaped details, while dilation produces the opposite effect.}
+	\caption{Example of grayscale erosion (bottom left) and dilation (bottom right) of an image detail (top left), using a cross-shaped structuring element (top right). The resulting patches show the effect of min and max operations: erosion produces a darker version of the original image eliminating small cross-shaped details, while dilation produces the opposite effect.}
+	\label{fig:grayscale_ex}
 \end{figure}
 
 As in binary morphology, the composition of erosion and dilation allows defining more complex filters, among which the most common are the \textit{open} and \textit{close} operators, respectively defined as follows:
@@ -110,6 +112,7 @@ As in binary morphology, the composition of erosion and dilation allows defining
 \begin{equation}
 (f \circ B) = (f \ominus B) \oplus B
 \end{equation}
+\vspace{-0.5cm}
 \begin{equation}
 (f \bullet B) = (f \oplus B) \ominus B
 \end{equation}
@@ -123,6 +126,7 @@ Also the mathematical properties of morphological grayscale operators match the 
 	\begin{equation}
 	A \ominus B \ominus C = A \ominus (B \oplus C)
 	\end{equation}
+	\vspace{-0.5cm}
 	\begin{equation}
 	A \oplus B \oplus C = A \oplus (B \oplus C)
 	\end{equation} 
@@ -130,6 +134,7 @@ Also the mathematical properties of morphological grayscale operators match the 
 	\begin{equation}
 	A \circ B \circ B = A \circ B
 	\end{equation}
+	\vspace{-0.5cm}
 	\begin{equation}
 	A \bullet B \bullet B = A \bullet B
 	\end{equation} 
@@ -147,16 +152,24 @@ Additionally, it is easy to see that the two theorems introduced in \cite{de2017
 	Let $I' = I \ominus K$, then $\forall M$ such that $\exists E | M \oplus E = K$, we have that $I' \bullet M = I'$. Respectively, if $I' = I \oplus K$, then $I' \circ M = I'$.
 \end{theorem}
 
+\begin{figure*}[h!]
+	\centering
+	\includegraphics[width=\linewidth]{kernels}
+	\caption{Set of structuring elements (kernels) used for simulations. In dark, structural element's reference point.}
+	\label{fig:masks}
+\end{figure*}
+\begin{figure*}[h]
+	\centering
+	\includegraphics[width=0.7\linewidth]{diagram1}
+	\caption{Proposed detection scheme for raw grayscale images.}
+	\label{fig:scheme}
+\end{figure*}
+
 Theorem \ref{theorem_1} can be equivalently formulated in terms of series of erosion and dilation operators, according to the definition of open and close operators. Theorem \ref{theorem_2} extends the equality of Theorem \ref{theorem_1} to any kernel mask $M$ that can produce $K$ by dilation with an appropriate kernel $E$.
 
 As an immediate consequence of the above theorems, an image dilated (eroded) with a given kernel $K$, will remain unchanged after applying an open (close) operator with the same element. This provides a simple test to detect a filtered image: apply an open (close) operator with a kernel $K$, if the image does not change, this means that it was previously dilated (eroded) with that kernel, otherwise it was not. The detection consists then in subsequently checking with the above procedure a set of possible masks. In \cite{de2017detecting}, a set of common kernels were proposed, characterized by some level of symmetry (see Figure \ref{fig:masks}).
 
-\begin{figure}[!t]
-	\centering
-	\includegraphics[width=\linewidth]{masks.png}
-	\caption{Set of structuring elements (kernels) used for simulations. In grey, structural element's reference point.}
-	\label{fig:masks}
-\end{figure}
+
 
 \section{Proposed approach}
 \label{sec:method}
@@ -165,14 +178,8 @@ In this section we introduce the proposed detector, distinguishing two cases: th
 
 \subsection{Filter Detection on Raw Images}
 
-According to the theory stated in Section \ref{sec:theory}, in the absence of post-processing grayscale morphological operators can be easily and deterministically detected by applying the schema proposed in \cite{de2017detecting} and reported in Figure \ref{fig:scheme}.
-
-\begin{figure*}[!ht]
-	\centering
-	\includegraphics[width=0.7\linewidth]{diagram1}
-	\caption{Proposed detection scheme for raw grayscale images.}
-	\label{fig:scheme}
-\end{figure*}
+According to the theory stated in Section \ref{sec:theory}, in the absence of post-processing grayscale morphological operators can be easily and deterministically detected by applying the schema proposed in 
+\cite{de2017detecting} and reported in Figure \ref{fig:scheme}.
 
 However, it is worth mentioning that this scenario is rarely verified in grayscale images, which are typically stored in compressed format after filtering. The compression (as well as most other image processing operations) significantly modifies the image, thus hindering the applicability of Theorem~\ref{theorem_1}. As a result, the detector will never report a perfect match between the input eroded (dilated) image and the corresponding opened (closed) version, i.e., it will never output a positive detection.
 
@@ -180,16 +187,14 @@ In the next section we propose an extension of the above algorithm that is able 
 
 \subsection{Filter Detection on Post-processed Images}
 As mentioned in the previous section, any further processing on the filtered image will modify the pixel values, possibly re-introducing structures that were eliminated by the morphological operator. A further morphological filtering will then produce a non-null effect on the image, which will be revealed by the detector. It is therefore necessary to verify if some traces of the original filter survive the post-processing.
-
-Recalling that the grayscale morphology operates as a local min-max filter, we can expect that it will produce larger variations in the presence of high-contrast structures that match the structural element geometry. On the contrary, unless the post-processing is meant to be extremely visible, it will introduce small gray level variations on the image. Consequently, although we will not have a null difference image at the detector output, we can expect that the local differences will be much smaller for a filtered image than for an original one. An experimental evidence of this fact is provided in Figure \ref{fig:hist_ero}. Here we plot the log-scale histograms of the absolute differences before and after the application of an open operator to a JPEG compressed unfiltered image, and to the relevant JPEG compressed dilated image. Both open and dilation operators have been applied using the kernel mask $35$ in Figure \ref{fig:masks}, and the JPEG quality factor has been set to $QF=95$. It is possible to observe that the histogram referred to the dilated image decreases steeply, with significant bins only for low values of the difference, while the histogram referred to the unfiltered image shows a long tail with significant values also above 50. This means on one side that the compression does not affect the high-contrast structures present in the original image (which are then removed by the following open operator), and on the other side that it does not re-introduce in the filtered image any high-contrast structure sensitive to the filter itself.
-
-\label{subsec:compr_img}
 \begin{figure*}[!ht]%
 	\centering
-	\includegraphics[width=\linewidth]{morphological_example}
+	\includegraphics[width=0.8\linewidth]{morphological_example}
 	\caption{Histograms of differences before and after application of the open operator to an original image (grayscale version of `r22fa37aft.TIF' from RAISE-1k) and its dilated version. Both images have been JPEG compressed with $QF = 95$. The chart shows the first 50 bins in logarithmic scale. }
-	\label{fig:hist_ero}
+	\label{fig:differerence_histogram}
 \end{figure*}
+
+Recalling that the grayscale morphology operates as a local min-max filter, we can expect that it will produce larger variations in the presence of high-contrast structures that match the structural element geometry. On the contrary, unless the post-processing is meant to be extremely visible, it will introduce small gray level variations on the image. Consequently, although we will not have a null difference image at the detector output, we can expect that the local differences will be much smaller for a filtered image than for an original one. An experimental evidence of this fact is provided in Figure \ref{fig:differerence_histogram}. Here we plot the log-scale histograms of the absolute differences before and after the application of an open operator to a JPEG compressed unfiltered image, and to the relevant JPEG compressed dilated image. Both open and dilation operators have been applied using the kernel mask $35$ in Figure \ref{fig:masks}, and the JPEG quality factor has been set to $QF=95$. It is possible to observe that the histogram referred to the dilated image decreases steeply, with significant bins only for low values of the difference, while the histogram referred to the unfiltered image shows a long tail with significant values also above 50. This means on one side that the compression does not affect the high-contrast structures present in the original image (which are then removed by the following open operator), and on the other side that it does not re-introduce in the filtered image any high-contrast structure sensitive to the filter itself.
 
 On this basis, we propose to modify the detection scheme as shown in Figure~\ref{fig:scheme_improved}.
 \begin{figure*}[!ht]
@@ -234,22 +239,7 @@ The proposed detector has been tested in various practical scenarios:%. It is to
 	\item Finally, we want to determine the capability of our approach in distinguishing between morphological filters and other filters that produce similar results. In particular, we considered Gaussian lowpass and median filtering. In both cases, the filtered images are compressed and passed to the detector to reveal possible false alarms.
 	
 \end{itemize}
-
-It is worth noting that, due to the properties analysed in Section~\ref{sec:theory}, in the presence of a cascade of different basic operators (erosion and dilation), the detector will reveal the last operator applied. Accordingly, when processing an opened or a closed image, the detector will reveal the last dilation or erosion, respectively. Furthermore, in the presence of a cascade of the same basic operator, the detector will reveal a single erosion or dilation with the composed structuring element. Therefore, in the experimental section we will just consider erosion and dilation detection, even if the image may have been potentially processed with more complex combinations of filters.
-
-
-\section{Experimental Results and Discussion}
-\label{sec:experiments}
-
-In this section, all experimental tests carried out are described. %In subsection IV-A, the selected datasets and the processing of their content are presented, together with results related to uncompressed data; while subsection IV-B is dedicated to the analysis of compressed data. 
-All  tests are performed using Python 3.6 and libSVM on a standard machine (Macbook Pro 2016 2,3GHz 4-kernel Intel Core i5, 8GB ram).
-
-\subsection{The Sensibility and the Choice of the Classifiers}
-\label{subsec:sensibity}
-
-In order to understand the impact of the parameters as well as to select a proper classifier, we ran some experiments on a subset of images. After that, we empirically determined the values for these parameters. Table~\ref{tab:sensibility} summarizes these parameters, their meaning and how their values were decided.
-
-\begin{table*}[t!]
+\begin{table*}[h!]
 	\centering
 	\caption{Parameters selection.}
 	\label{tab:sensibility}
@@ -271,39 +261,53 @@ In order to understand the impact of the parameters as well as to select a prope
 	\end{tabular}}
 \end{table*}
 
-The classifier receives in input the histogram of the differences between the input image and the relevant opened (closed) image and returns a binary decision. An important aspect is the training of the classifier. In fact, there is a clear dependency of the image statistics on the level of compression applied, which is reflected on the characteristics of the histogram. As an example, Figure \ref{fig:hist_ero_80} shows the same situation of Figure \ref{fig:hist_ero} at a lower quality factor. It can be observed that the two distributions are still well separable, but the histogram related to the filtered image shows a longer tail, due to the larger artifacts introduced by the compression.
+It is worth noting that, due to the properties analysed in Section~\ref{sec:theory}, in the presence of a cascade of different basic operators (erosion and dilation), the detector will reveal the last operator applied. Accordingly, when processing an opened or a closed image, the detector will reveal the last dilation or erosion, respectively. Furthermore, in the presence of a cascade of the same basic operator, the detector will reveal a single erosion or dilation with the composed structuring element. Therefore, in the experimental section we will just consider erosion and dilation detection, even if the image may have been potentially processed with more complex combinations of filters.
 
-\begin{figure}[t!]%
-	\centering
-	\includegraphics[width=\linewidth]{hist_ero_80.eps}
-	\caption{Same case of Fig. \ref{fig:hist_ero} after compression at $QF = 80$.}
-	\label{fig:hist_ero_80}%
-\end{figure}
 
-\begin{figure}[t!]
-	\centering
-	\includegraphics[width=\linewidth]{hist_dil_ero_same.eps}
-	\caption{Histograms resulting from dilated and eroded images produced with the same structuring element, after compression at QF=95 and erosion detection. \textbf{Figure 9: since you decided to go for K instead of B maybe is better to cite K and K*?}}
-	\label{fig:hist_dil_ero_same}
-\end{figure}
+\section{Experimental Results and Discussion}
+\label{sec:experiments}
 
-\begin{figure}[t!]
-	\centering
-	\includegraphics[width=\linewidth]{hist_ero_ero_diff.eps}
-	\caption{Histograms resulting from eroded images produced with unrelated structuring elements, after compression at QF=95 and erosion detection.\textbf{Figure 9: since you decided to go for K instead of B maybe is better to cite K and K*?}}
-	\label{fig:hist_ero_ero_diff}
-\end{figure}
+In this section, all experimental tests carried out are described. 
+All  tests are performed using Python 3.6 and libSVM on a standard machine (Macbook Pro 2016 2,3GHz 4-kernel Intel Core i5, 8GB ram).
 
-\begin{figure}[t!]
+\subsection{The Sensibility and the Choice of the Classifiers}
+\label{subsec:sensibity}
+
+In order to understand the impact of the parameters as well as to select a proper classifier, we ran some experiments on a subset of images. After that, we empirically determined the values for these parameters. Table~\ref{tab:sensibility} summarizes these parameters, their meaning and how their values were decided.
+\begin{figure*}[h!]
 	\centering
-	\includegraphics[width=\linewidth]{hist_ero_ero_albero.eps}
-	\caption{Histograms resulting from eroded images produced with structuring element $B$ and its dilated version $B^*$, after compression at QF=95 and erosion detection.\textbf{Figure 9: since you decided to go for K instead of B maybe is better to cite K and K*?}}
-	\label{fig:hist_ero_ero_albero}
-\end{figure}
+	\includegraphics[width=0.8\linewidth]{morp_cases}
+	\caption{Analysis of difference cases in erosion detection. (a) Same case of Figure~\ref{fig:differerence_histogram} after compression at $QF = 80$; (b)~Histograms resulting from dilated and eroded images produced with the same kernel, after compression at $QF=95$;
+		(c)~Histograms resulting from eroded images produced with unrelated kernels, after compression at $QF=95$; and
+		(d)~Histograms resulting from eroded images produced with kernel $K$ and its dilated version $K^*$, after compression at $QF=95$}.
+	\label{fig:morp_cases}
+\end{figure*}
+\begin{table*}[t!]
+	\centering
+	\caption{Morphological filtering detection results on all three datasets  using SVM with RBF kernel, 10-fold cross validation. The numbers are in percentage and each of them is the average performance (for distinguishing between pristine versus filtered images) over all 36 kernels. Detailed results are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation}.}
+	\label{table:detection_results}
+	%\resizebox{\linewidth}{!}{
+	\begin{tabular}{l|l|ccccccc}
+		\hline\hline
+		\textbf{Dataset} & \textbf{Operator} & \textbf{QF = 100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\
+		\hline
+		\textbf{UCID} & Erosion & 100 & 90.86 & 82.62 & 79.63 & 77.45 & 67.41 & 64.42 \\
+		& Dilation & 100 & 90.16 & 82.86 & 79.95 & 76.80 & 68.77 & 64.94 \\
+		\hline
+		\textbf{Dresden} & Erosion & 100 & 97.56 & 96.94 & 95.20 & 88.73 & 79.85 & 78.34 \\
+		& Dilation & 100 & 97.93 & 96.82 & 96.11 & 88.74 & 81.08 & 75.08 \\
+		\hline
+		\textbf{Raise} & Erosion & 100 & 98.66 & 96.25 & 94.82 & 89.00 & 80.42 & 78.55 \\
+		& Dilation & 100 & 97.98 & 97.43 & 93.72 & 91.02 & 80.49 & 78.53 \\
+		\hline\hline
+	\end{tabular}%}
+\end{table*}
+
+The classifier receives in input the histogram of the differences between the input image and the relevant opened (closed) image and returns a binary decision. An important aspect is the training of the classifier. In fact, there is a clear dependency of the image statistics on the level of compression applied, which is reflected on the characteristics of the histogram. As an example, Figure~\ref{fig:morp_cases}~(a) shows the same situation of Figure~\ref{fig:differerence_histogram} at a lower quality factor. It can be observed that the two distributions are still well separable, but the histogram related to the filtered image shows a longer tail, due to the larger artifacts introduced by the compression.
 
 Accordingly, we decided to train a set of classifiers for varying JPEG quality factors, from 100 to 70. During the test phase, we tested with different classifiers: k-NN, decision trees, naive Bayes classifier, and SVM, and empirically decided to use SVM with the radial basis function (RBF) kernel. 
 
-We also note that given the appropriate quality factor, the histograms of differences show a peculiar behavior only if the detector parameters match the input filter in both the operator (erosion or dilation) and the structural element (kernel), whereas such behavior is never found in all the other combinations. It is important to notice that the application of the detector to an unfiltered image or to an image filtered with a different combination of operator and/or kernel produces similar results, i.e., only the matching detector responds to the filtered image. As an example, in Figure \ref{fig:hist_dil_ero_same} we show the histograms deriving from the application of an erosion detector to an eroded and a dilated image, both with the same kernel. It can be observed that the dilated image responds similarly to the uncompressed image in Figure \ref{fig:hist_ero}. Analogously, in Figure \ref{fig:hist_ero_ero_diff}, we compare the histograms deriving from the erosion detector applied to two eroded images, one with the same kernel and the other with a different one. Also in this case, the image filtered with a different kernel responds as unfiltered. Finally, in Figure \ref{fig:hist_ero_ero_albero} we show the case of application of the erosion detector to two images filtered with kernels belonging to the same group (i.e., one can be obtained from the other by dilation). As expected from Theorem~\ref{theorem_2}, the two histograms are almost overlapped, since both show the statistical properties of a filtered image.
+We also note that given the appropriate quality factor, the histograms of differences show a peculiar behavior only if the detector parameters match the input filter in both the operator (erosion or dilation) and the structural element (kernel), whereas such behavior is never found in all the other combinations. It is important to notice that the application of the detector to an unfiltered image or to an image filtered with a different combination of operator and/or kernel produces similar results, i.e., only the matching detector responds to the filtered image. As an example, in Figure~\ref{fig:morp_cases}~(b) we show the histograms deriving from the application of an erosion detector to an eroded and a dilated image, both with the same kernel. It can be observed that the dilated image responds similarly to the uncompressed image in Figure~\ref{fig:morp_cases}~(a). Analogously, in Figure~\ref{fig:morp_cases}~(c), we compare the histograms deriving from the erosion detector applied to two eroded images, one with the same kernel and the other with a different one. Also in this case, the image filtered with a different kernel responds as unfiltered. Finally, in Figure~\ref{fig:morp_cases}~(d) we show the case of application of the erosion detector to two images filtered with kernels belonging to the same group (i.e., one can be obtained from the other by dilation). As expected from Theorem~\ref{theorem_2}, the two histograms are almost overlapped, since both show the statistical properties of a filtered image.
 
 For some other choices, for example the block size or $\alpha_{th}$, all values are empirically selected and are reported in Table~\ref{tab:sensibility}. 
 
@@ -313,8 +317,9 @@ For some other choices, for example the block size or $\alpha_{th}$, all values 
 \subsubsection{Experimental Results on Raw Images}
 
 We ran a test on uncompressed images in order to confirm the deterministic nature of the proposed approach on unpressed images. Since the detection strategy in this case is the very same proposed in \cite{de2017detecting}, we followed their general approach for deriving results relative to raw grayscale images. Each image has been processed with erosion and dilation operators considering all the 36 kernels.
-All images, along with their unprocessed versions, were fed to both dilation and erosion detectors. For each image, all 36 kernels are tested, returning either the largest kernel with perfect match between input and output or no detection if all kernels fail. All three datasets result in 100\% accuracy in discriminating the presence and the type of morphological filter, as reported in Table \ref{tab1:det_acc}.
+All images, along with their unprocessed versions, were fed to both dilation and erosion detectors. For each image, all 36 kernels are tested, returning either the largest kernel with perfect match between input and output or no detection if all kernels fail. All three datasets result in 100\% accuracy in discriminating the presence and the type of morphological filter.%, as reported in Table \ref{tab1:det_acc}.
 
+\begin{comment}
 \begin{table}[!ht]
 	\centering
 	\caption{Detection accuracy for all three datasets for uncompressed images.}
@@ -331,58 +336,40 @@ All images, along with their unprocessed versions, were fed to both dilation and
 		\hline\hline
 	\end{tabular}
 \end{table}
-
-\begin{sidewaystable*}[]
-	\centering
-	\caption{Confusion matrix on erosion detection for multiple kernels. Dataset: Raise, QF = 90, full resolution. Values are normalized and are in percentage.}
-	\label{table:confusion}
-	\includegraphics[width=\linewidth]{confusion}
-\end{sidewaystable*}
+\end{comment}
 
 \subsubsection{Experimental Results on JPEG Compressed Images}
 %
 In order to test the approach on JPEG compressed images, we considered a set of seven different quality factors with $QF \in \{100,95,90,85,80,75,70\}$, with 14 $(7\times 2)$ binary classifiers, respectively,
-using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$. Shown in Table~\ref{table:detection_results} are the average results (over all kernels) of the proposed method on three datasets at the seven quality factors. The detailed results for all kernels, both two morphological operators over all three datasets are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation} in \ref{app:detailed_compress}. According to the results, we can observe that the proposed method can provide high detection performance on low compression level (i.e., high factor quality with $QF \ge 80$) with accuracy equal or above $76.8\%$ on all datasets. At higher compression level, the performance reduces significantly. The resolution also plays an important role as it can be grasped from the results. Indeed, UCID has lower performance with respect to Dresden and Raise. It is also interesting to notice that there is little difference between Dresden and Raise. To have a deeper understanding of the impact of the image resolution, we ran another test on different image resolutions: the proposed method achieves good performance (over 90\%) for resolution from about $1,000 \times 1,000$. Shown in Figure~\ref{fig:resolutions} are results over 36 kernels on erosion detection forr RAISE-1k images.%Table~\ref{table:resolutionerosion} in \ref{app:detailed_compress}. 
+using a Gaussian kernel with grid-search for the parameters. We apply k-Fold validation with $k = 10$. Shown in Table~\ref{table:detection_results} are the average results (over all kernels) of the proposed method on three datasets at the seven quality factors. The detailed results for all kernels, both two morphological operators over all three datasets are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation}. 
+%
+According to the results, we can observe that the proposed method can provide high detection performance on low compression level (i.e., high factor quality with $QF \ge 80$) with accuracy equal or above $76.8\%$ on all datasets. At higher compression level, the performance reduces significantly. The resolution also plays an important role as it can be grasped from the results. Indeed, UCID has lower performance with respect to Dresden and Raise. It is also interesting to notice that there is little difference between Dresden and Raise. To have a deeper understanding of the impact of the image resolution, we ran another test on different image resolutions: the proposed method achieves good performance (over 90\%) for resolution from about $1,000 \times 1,000$. Shown in Figure~\ref{fig:resolutions} are results over 36 kernels on erosion detection forr RAISE-1k images.%Table~\ref{table:resolutionerosion} in \ref{app:detailed_compress}. 
 
-\begin{figure}[h!]
+\begin{figure}[t!]
 	\centering
 	\includegraphics[width=\linewidth]{resolutions.pdf}
-	\caption{Results (computed as percentage) on erosion detection under different resolutions. Dataset: Raise, QF = 90. All 36 kernels are computed and their results are shown in the error bars.}
+	\caption{Precision (computed as percentage) on erosion detection under different resolutions. Dataset: Raise, QF = 90. All 36 kernels are computed and their results are shown in the error bars.}
 	\label{fig:resolutions}
 \end{figure}
-
-\begin{table*}[t!]
-	\centering
-	\caption{Morphological filtering detection results on all three datasets  using SVM with RBF kernel, 10-fold cross validation. The numbers are in percentage and each of them is the average performance (for distinguishing between pristine versus filtered images) over all 36 kernels. Detailed results are reported in Tables~\ref{table:uciderosion} - \ref{table:raisedilation}.}
-	\label{table:detection_results}
-	%\resizebox{\linewidth}{!}{
-		\begin{tabular}{l|l|ccccccc}
-			\hline\hline
-			\textbf{Dataset} & \textbf{Operator} & \textbf{QF = 100} & \textbf{95} & \textbf{90} & \textbf{85} & \textbf{80} & \textbf{75} & \textbf{70} \\
-			\hline
-			\textbf{UCID} & Erosion & 100 & 90.86 & 82.62 & 79.63 & 77.45 & 67.41 & 64.42 \\
-			& Dilation & 100 & 90.16 & 82.86 & 79.95 & 76.80 & 68.77 & 64.94 \\
-			\hline
-			\textbf{Dresden} & Erosion & 100 & 97.56 & 96.94 & 95.20 & 88.73 & 79.85 & 78.34 \\
-			& Dilation & 100 & 97.93 & 96.82 & 96.11 & 88.74 & 81.08 & 75.08 \\
-			\hline
-			\textbf{Raise} & Erosion & 100 & 98.66 & 96.25 & 94.82 & 89.00 & 80.42 & 78.55 \\
-			& Dilation & 100 & 97.98 & 97.43 & 93.72 & 91.02 & 80.49 & 78.53 \\
-			\hline\hline
-	\end{tabular}%}
-\end{table*}
 
 \subsection{Detector Robustness Analysis}
 \label{subsec:result_attacks}
 
-The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect them using different classifiers. Shown in Table~\ref{table:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small size kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable as a consequence of Theorem~\ref{theorem_2}.
+The second test in this set is to analyse the impact of different kernels. We applied all kernels and then tried to detect them using different classifiers. Shown in Figure~\ref{fig:confusion} is the confusion matrix of the erosion detection (similar results were obtained on dilation detection). According to the results, the detector was able to recognize small size kernels (kernels from 1 to 14, please see again Figure~\ref{fig:masks} for the kernels), or larger kernels in special shape (kernels 20 to 25), but poorly classified the others. This is understandable as a consequence of Theorem~\ref{theorem_2}.
+
+\begin{figure}[b!]
+	\centering
+	\includegraphics[width=\linewidth]{confusion_matrix}
+	\caption{Confusion matrix on erosion detection for multiple kernels. Dataset: Raise, QF = 90, full resolution. Values are normalized and are in percentage.}
+	\label{fig:confusion}
+\end{figure}
 
 The third set of tests concerns analysis of robustness against noise addition. In the first test, morphological filtering is applied to each image and then this is contaminated with a noise. Five different attacks - pepper \& salt noise, Gaussian filtering, median filtering, scaling at 1.1x and scaling at 0.9x - were applied and average results (on all kernels) for dilation detection on RAISE1k are correspondingly: 97.92\%, 81.21\%, 87.94\%, 67.44\%, and 67.81\% (the results are summarized in Figure~\ref{fig:attacks_1}. According to the results, we can claim that the proposed method is robust against noise addition but not against processing involving interpolation (e.g., resizing). 
 
-\begin{figure}[h!]
+\begin{figure}[t!]
 	\centering
 	\includegraphics[width=\linewidth]{attacks_1.pdf}
-	\caption{Results (computed as percentage) on dilation detection under different attacks. Dataset: RAISE-1k, full resolution, QF = 100, using SVM with RBF kernel, 10-fold cross validation. All 36 kernels are computed and the results are shown in the error bars.}
+	\caption{Precision (computed as percentage) on dilation detection under different attacks. Dataset: RAISE-1k, full resolution, QF = 100, using SVM with RBF kernel, 10-fold cross validation. All 36 kernels are computed and the results are shown in the error bars.}
 	\label{fig:attacks_1}
 \end{figure}
 
@@ -414,32 +401,24 @@ Finally, we want to determine the capability of our approach in distinguishing b
 In this experiment, we trained the erosion versus pristine classifier with 800 uncompressed images from RAISE in full resolution. The trained classifier is then applied to the rest of the 200 images, filtered with pepper \& salt, Gaussian lowpass and median filters. We got the average number of false positives (over 200 images) for pepper \& salt, Gaussian $3 \times 3$, Gaussian $5 \times 5$, median filter $3 \times 3$, and median filter $5 \times 5$ are 3.51\%, 5.72\%, 5.28\%, 14.11\%, and 13.17\%, respectively. The results are summarized in Figure~\ref{fig:different_filters}.  
 This confirms that the proposed method can distinguish between morphological filter from other filters. Only in the case of median filters the confusion increases, but this is very reasonable, since in the case of grayscale images the effect of morphological filters and median filters are very similar.
 
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=\linewidth]{different_filters.pdf}
-	\caption{False Positive (computed as percentage) on 200 images from RAISE on erosion detection over all 36 filters. Images are in raw format, full resolution. The classifiers were trained on 800 images (eroded vs. non-filtered) and tested on the rest 200 images (filtered with pepper \& salt, Gaussian and median).\textbf{Can we scale it 0-100 as previous one so it is evident we do not have huge errors?}}
-	\label{fig:different_filters}
-\end{figure}
-
 
 \section{Conclusions}
 \label{sec:conclusions}
 In this work we propose an effective detection strategy to assess the use of morphological filtering in a grayscale context. We deal with uncompressed images proposing a deterministic approach, reflection of the binary domain scenario, based on mathematical properties enjoyed by basic morphological operators. We additionally propose a modified pipeline to detect morphological processing in compressed images, exploiting difference histogram information as feature for  classification. Finally, we present a testing phase in which both uncompressed and compressed scenarios are taken into consideration. Results show the effectiveness of our proposed approach in both cases.  
 
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=\linewidth]{different_filters.pdf}
+	\caption{False Positive (computed as percentage) on 200 images from RAISE on erosion detection over all 36 filters. Images are in raw format, full resolution. The classifiers were trained on 800 images (eroded vs. non-filtered) and tested on the rest 200 images (filtered with pepper \& salt, Gaussian and median).}
+	\label{fig:different_filters}
+\end{figure}
+
 \bibliography{refs}
 \bibliographystyle{IEEEtran}
 
-\begin{comment}
-\newpage
-\appendix
-\setcounter{table}{0}
-
-\section{Detailed Results}
-\label{app:detailed_compress}
-
 \begin{table*}[ht!]
 	\centering
-	\begin{minipage}{0.48\linewidth}
+	\begin{minipage}{0.4\linewidth}
 		\centering
 		\caption{Results on erosion detection on UCID using SVM with RBF kernel, 10-fold cross validation.}
 		\label{table:uciderosion}
@@ -489,7 +468,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 				\hline\hline	
 		\end{tabular}}
 	\end{minipage}
-	\begin{minipage}{0.48\linewidth}
+	\begin{minipage}{0.4\linewidth}
 		\centering
 		\caption{Results on dilation detection on UCID using SVM with RBF kernel, 10-fold cross validation.}
 		\label{table:uciddilation}
@@ -543,7 +522,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 
 \begin{table*}[ht!]
 	\centering
-	\begin{minipage}{0.48\linewidth}
+	\begin{minipage}{0.4\linewidth}
 		\centering
 		\caption{Results on erosion detection on Dresden using SVM with RBF kernel, 10-fold cross validation.}
 		\label{table:dresdenerosion}
@@ -593,7 +572,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 				\hline\hline	
 		\end{tabular}}
 	\end{minipage}
-	\begin{minipage}{0.48\linewidth}
+	\begin{minipage}{0.4\linewidth}
 		\centering
 		\caption{Results on dilation detection on Dresden using SVM with RBF kernel, 10-fold cross validation.}
 		\label{table:dresdendilation}
@@ -647,7 +626,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 
 \begin{table*}[ht!]
 	\centering
-	\begin{minipage}{0.48\linewidth}
+	\begin{minipage}{0.4\linewidth}
 		\centering
 		\caption{Results on erosion detection on Raise using SVM with RBF kernel, 10-fold cross validation.}
 		\label{table:raise}
@@ -698,7 +677,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 				\hline\hline	
 		\end{tabular}}
 	\end{minipage}
-	\begin{minipage}{0.48\linewidth}
+	\begin{minipage}{0.4\linewidth}
 		\centering
 		\caption{Results on dilation detection on Raise using SVM with RBF kernel, 10-fold cross validation.}
 		\label{table:raisedilation}
@@ -750,48 +729,17 @@ In this work we propose an effective detection strategy to assess the use of mor
 		\end{tabular}}
 	\end{minipage}
 \end{table*}
-\end{comment}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{Picture1.png}}]{Giulia Boato} is Associate Professor at the Department of Information Engineering and Computer Science (DISI) of the University of Trento (Italy). She is currently coordinating the Euregio project NOTIS Humans in a digital era – New Opportunities and Threats for Information Security.  She was co-chair of the International Workshop Living Web: making diversity a true asset within the International Semantic Web Conference 2009 and of the workshop on Event-based Media Integration and Processing co-located with ACM Multimedia Conference 2013. She was Technical Program Chair of the ACM Workshop on Information Hiding and Multimedia Security 2018. She is associate editor for the IEEE Transactions on Image Processing, for the ELSEVIER Signal Processing: Image Communication, and for the Journal of Electronic Imaging. Her research interests are focused on image and signal processing, with particular attention to multimedia data protection, data hiding and digital forensics, but also intelligent multidimensional data management and analysis. She is author of 120 papers in international conferences and journals, with H-index 22 (Google Scholar). She is elected member of the IEEE Multimedia Signal Processing Technical Committee (MMSP TC), of the IEEE Information Forensics and Security Technical Committee (IFS TC) and of the EURASIP Special Area Teams Biometrics, Data Forensics, and Security.
 \end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{a2.png}}]{Duc-Tien Dang-Nguyen} was born in Greenwich Village, New York, NY, USA in 
-1977. He received the B.S. and M.S. degrees in aerospace engineering from 
-the University of Virginia, Charlottesville, in 2001 and the Ph.D. degree in 
-mechanical engineering from Drexel University, Philadelphia, PA, in 2008.
-
-From 2001 to 2004, he was a Research Assistant with the Princeton Plasma 
-Physics Laboratory. Since 2009, he has been an Assistant Professor with the 
-Mechanical Engineering Department, Texas A{\&}M University, College Station. 
-He is the author of three books, more than 150 articles, and more than 70 
-inventions. His research interests include high-pressure and high-density 
-nonthermal plasma discharge processes and applications, microscale plasma 
-discharges, discharges in liquids, spectroscopic diagnostics, plasma 
-propulsion, and innovation plasma applications. He is an Associate Editor of 
-the journal \emph{Earth, Moon, Planets}, and holds two patents. 
-
-Dr. Author was a recipient of the International Association of Geomagnetism 
-and Aeronomy Young Scientist Award for Excellence in 2008, and the IEEE 
-Electromagnetic Compatibility Society Best Symposium Paper Award in 2011. 
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{Tien.jpg}}]{Duc-Tien Dang-Nguyen} is currently an Associate Professor at the Department of Information Science and Media Studies (Informedia), University of Bergen (Norway). His main area of expertise is on multimedia forensics, lifelogging, multimedia retrieval, and computer vision. 
+%
+He is author of 80 papers in international conferences and journals, with H-index~17 (Google Scholar, October 2019). He is member of IEEE Signal Processing, ACM, SIGIR, IAPR and INSTICC.  
+He has organised and chaired over 20 workshops and special sessions, has been served as program committee for numerous international conferences and workshops, and has peer-reviewed for many top journals and conferences in the fields of lifelogging, multimedia forensics, and pattern recognition. Co-organiser of both the Multimedia Verification task, the NTCIR Lifelog task, the ImageClef Lifelog tasks, and many other MediaEval tasks. 
 \end{IEEEbiography}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{a3.png}}]{Francesco G.B. De Natale} (M'87) received the B.S. degree in mechanical 
-engineering from National Chung Cheng University, Chiayi, Taiwan, in 2004 
-and the M.S. degree in mechanical engineering from National Tsing Hua 
-University, Hsinchu, Taiwan, in 2006. He is currently pursuing the Ph.D. 
-degree in mechanical engineering at Texas A{\&}M University, College 
-Station, TX, USA.
-
-From 2008 to 2009, he was a Research Assistant with the Institute of 
-Physics, Academia Sinica, Tapei, Taiwan. His research interest includes the 
-development of surface processing and biological/medical treatment 
-techniques using nonthermal atmospheric pressure plasmas, fundamental study 
-of plasma sources, and fabrication of micro- or nanostructured surfaces. 
-
-Mr. Author's awards and honors include the Frew Fellowship (Australian 
-Academy of Science), the I. I. Rabi Prize (APS), the European Frequency and 
-Time Forum Award, the Carl Zeiss Research Award, the William F. Meggers 
-Award and the Adolph Lomb Medal (OSA).
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{denatale.jpg}}]{Francesco G.B. De Natale} was the Head of the Department of Information Engineering and Computer Science (DISI), University of Trento (Italy) from 2007 to 2010, where he currently leads the MMLab Research Laboratory. He is also a Professor of telecommunications with the University of Trento. His research interests include multimedia communications, where he published over 200 works in the major international journals and conferences. He is also a member of the Board of Governors of the CNIT Consortium. He has been an Associate Editor of the IEEE Transactions on Multimedia and the IEEE Transactions on Circuits and System for Video Technologies.
 \end{IEEEbiography}
 
 \EOD
