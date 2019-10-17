@@ -34,15 +34,15 @@
 \title{Morphological Filter Detector for Image~Forensics~Applications}
 \author{\uppercase{Giulia Boato}\authorrefmark{1}, \IEEEmembership{Member, IEEE},
 \uppercase{Duc-Tien Dang-Nguyen}\authorrefmark{2}, \IEEEmembership{Member, IEEE} and \uppercase{Francesco G.B. De Natale}\authorrefmark{1},\IEEEmembership{Senior Member, IEEE}}
-\address[1]{University of Trento, Italy (e-mail: boato@disi.unitn.it; denatale@ing.unitn.it)}
+\address[1]{University of Trento, Italy (e-mail: giulia.boato@unitn.it; francesco.denatale@unitn.it)}
 \address[2]{University of Bergen, Norway(e-mail: ductien.dangnguyen@uib.no)}
-\tfootnote{``This work was supported in part by ABC DEF GHI under Grant 123 456 789.''}
+%\tfootnote{``This work was supported in part by ABC DEF GHI under Grant 123 456 789.''}
 
 \markboth
 {Boato \headeretal: Morphological Filter Detector for Image~Forensics~Applications}
 {Boato \headeretal: Morphological Filter Detector for Image~Forensics~Applications}
 
-\corresp{Corresponding author: Giulia Boato (e-mail: boato@disi.unitn.it).}
+\corresp{Corresponding author: Giulia Boato (e-mail: giulia.boato@unitn.it).}
 
 \begin{abstract}
 Mathematical morphology provides a large set of powerful non-linear image operators, widely used for feature extraction, noise removal or image enhancement. Although morphological filters might be used to remove artifacts produced by image manipulations, both on binary and graylevel documents, little effort has been spent towards their forensic identification. In a previous work \cite{de2017detecting}, a deterministic approach was proposed to detect erosion and dilation of binary images. In this paper we propose a non-trivial extension of such method that operates on grayscale images and is robust to image compression and other typical attacks. When the image is attacked the method looses its deterministic nature and uses a properly trained SVM classifier, using the original detector as a feature extractor. Extensive tests demonstrate that the proposed approach guarantees very high accuracy in filtering detection also after a high compression, and is also able to determine the adopted structuring element for moderate compression factors.
@@ -67,7 +67,7 @@ In the last decade, researchers and practitioners in multimedia forensics have b
 A recent trend tries to define universal detectors able to reveal manipulations independently from the type of processing applied, which could leverage media authentication in applications like journalism or social media analysis \cite{noiseprint}. 
 On the other hand, many methods have been proposed to detect different types of forgeries, which is very relevant for diverse applications, in particular digital investigations - given that images, audio tracks and video sequences now play a crucial role in modern investigations where they often represent digital evidences to the court \cite{forlab} - and multimedia data phylogeny aiming at recovering and tracing back the life-cycle of an image or a video \cite{Bestagini2016, Dias2012, Oliveira2016, Costa2014}.
 
-This broad class of specific manipulation detectors includes the identification of pasted or inserted regions \cite{cm2, cm3, cm4, spl2, spl3}, resizing \cite{fernando2017, PB-TIFS-2019}, re-compression \cite{PBPG2017-TIFS},  image enhancing \cite{shan2019robust}, inconsistencies in the geometry and illumination of the image due to possible manipulations \cite{geom1, geom2, phys1}, and various types of non-linear filtering (especially median) \cite{Bahrami2015, Cao2014, Cao2011, Fridrich2010, Tian2010, Yuan:2011, Liu2013, Huang2013, Shi2014, Wang2015, Pasquini2016-TIFS, gao2019robust}. 
+This broad class of specific manipulation detectors includes the identification of pasted regions \cite{cm2, cm3, cm4, spl2, spl3}, resizing \cite{fernando2017, PB-TIFS-2019}, re-compression \cite{PBPG2017-TIFS},  image enhancing \cite{shan2019robust}, inconsistencies in the geometry and illumination of the image due to possible manipulations \cite{geom1, geom2, phys1}, and various types of non-linear filtering (especially median) \cite{Bahrami2015, Cao2014, Cao2011, Fridrich2010, Tian2010, Yuan:2011, Liu2013, Huang2013, Shi2014, Wang2015, Pasquini2016-TIFS, gao2019robust}. 
 
 In the context of non-linear filtering detection 
 very little attention was given to morphological filters \cite{haas1967morphologie} often used in image processing for artifacts removal and image enhancement \cite{British2012} \cite{Maragos2004}. The detection of this kind of filtering is of interest in the context of both image phylogeny and specific tampering identification in legal scenarios, but could be very useful also to detect possible counter forensic attacks based on morphology, where such filters, very powerful in the removal of local noise, could be exploited at the end of the image manipulation process to cover other types of traces. 
@@ -154,7 +154,7 @@ As an immediate consequence of the above theorems, an image dilated (eroded) wit
 \begin{figure}[!t]
 	\centering
 	\includegraphics[width=\linewidth]{masks.png}
-	\caption{Set of structuring elements (kernels) used for simulations. In grey, each structural element's reference point.}
+	\caption{Set of structuring elements (kernels) used for simulations. In grey, structural element's reference point.}
 	\label{fig:masks}
 \end{figure}
 
@@ -752,30 +752,7 @@ In this work we propose an effective detection strategy to assess the use of mor
 \end{table*}
 \end{comment}
 
-\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{a1.png}}]{Giulia Boato} (M'76--SM'81--F'87) and all authors may include 
-biographies. Biographies are often not included in conference-related
-papers. This author became a Member (M) of IEEE in 1976, a Senior
-Member (SM) in 1981, and a Fellow (F) in 1987. The first paragraph may
-contain a place and/or date of birth (list place, then date). Next,
-the author's educational background is listed. The degrees should be
-listed with type of degree in what field, which institution, city,
-state, and country, and year the degree was earned. The author's major
-field of study should be lower-cased. 
-
-The second paragraph uses the pronoun of the person (he or she) and not the 
-author's last name. It lists military and work experience, including summer 
-and fellowship jobs. Job titles are capitalized. The current job must have a 
-location; previous positions may be listed 
-without one. Information concerning previous publications may be included. 
-Try not to list more than three books or published articles. The format for 
-listing publishers of a book within the biography is: title of book 
-(publisher name, year) similar to a reference. Current and previous research 
-interests end the paragraph. The third paragraph begins with the author's 
-title and last name (e.g., Dr.\ Smith, Prof.\ Jones, Mr.\ Kajor, Ms.\ Hunter). 
-List any memberships in professional societies other than the IEEE. Finally, 
-list any awards and work for IEEE committees and publications. If a 
-photograph is provided, it should be of good quality, and 
-professional-looking. Following are two examples of an author's biography.
+\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{Picture1.png}}]{Giulia Boato} is Associate Professor at the Department of Information Engineering and Computer Science (DISI) of the University of Trento (Italy). She is currently coordinating the Euregio project NOTIS Humans in a digital era – New Opportunities and Threats for Information Security.  She was co-chair of the International Workshop Living Web: making diversity a true asset within the International Semantic Web Conference 2009 and of the workshop on Event-based Media Integration and Processing co-located with ACM Multimedia Conference 2013. She was Technical Program Chair of the ACM Workshop on Information Hiding and Multimedia Security 2018. She is associate editor for the IEEE Transactions on Image Processing, for the ELSEVIER Signal Processing: Image Communication, and for the Journal of Electronic Imaging. Her research interests are focused on image and signal processing, with particular attention to multimedia data protection, data hiding and digital forensics, but also intelligent multidimensional data management and analysis. She is author of 120 papers in international conferences and journals, with H-index 22 (Google Scholar). She is elected member of the IEEE Multimedia Signal Processing Technical Committee (MMSP TC), of the IEEE Information Forensics and Security Technical Committee (IFS TC) and of the EURASIP Special Area Teams Biometrics, Data Forensics, and Security.
 \end{IEEEbiography}
 
 \begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{a2.png}}]{Duc-Tien Dang-Nguyen} was born in Greenwich Village, New York, NY, USA in 
